@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -36,9 +37,9 @@ class AuthController extends Controller
         return redirect()->route('books.index')->with('success', 'Đăng ký tài khoản thành công.');
     }
 
-    public function login(Request $request): RedirectResponse
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required']]);
+        $credentials = $request->validated();
         $user = User::where('email', $credentials['email'])->first();
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])->onlyInput('email');
