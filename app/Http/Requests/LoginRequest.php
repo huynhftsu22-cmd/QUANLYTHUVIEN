@@ -14,7 +14,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string'],
             'remember' => ['nullable', 'boolean'],
         ];
@@ -23,9 +23,19 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Vui lòng nhập email.',
-            'email.email' => 'Email không đúng định dạng.',
-            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'email.required' => 'Email không được để trống.',
+            'email.email' => 'Email phải là địa chỉ email hợp lệ.',
+            'email.max' => 'Email không được dài quá 255 ký tự.',
+            'password.required' => 'Mật khẩu không được để trống.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'email' => 'Email',
+            'password' => 'Mật khẩu',
+            'remember' => 'Ghi nhớ đăng nhập',
         ];
     }
 }

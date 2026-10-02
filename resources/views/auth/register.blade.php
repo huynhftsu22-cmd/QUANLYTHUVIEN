@@ -1,7 +1,116 @@
-@extends('layouts.app') @section('title','Đăng ký')
-@section('content')<div class="row justify-content-center"><div class="col-md-7"><div class="card p-4"><h1 class="h4 mb-4">Đăng ký độc giả</h1>
-<form method="POST" action="{{ route('register.store') }}">@csrf <div class="row">
- @foreach(['name'=>'Họ và tên','email'=>'Email','phone'=>'Số điện thoại','address'=>'Địa chỉ'] as $field=>$label)<div class="col-md-6 mb-3"><label class="form-label">{{ $label }}</label><input class="form-control @error($field) is-invalid @enderror" type="{{ $field==='email'?'email':'text' }}" name="{{ $field }}" value="{{ old($field) }}" {{ in_array($field,['name','email'])?'required':'' }}>@error($field)<div class="invalid-feedback">{{ $message }}</div>@enderror</div>@endforeach
- <div class="col-md-6 mb-3"><label class="form-label">Mật khẩu</label><input class="form-control" type="password" name="password" required></div><div class="col-md-6 mb-3"><label class="form-label">Nhập lại mật khẩu</label><input class="form-control" type="password" name="password_confirmation" required></div>
- </div><button class="btn btn-primary">Tạo tài khoản</button> <a class="btn btn-link" href="{{ route('login') }}">Đã có tài khoản</a></form>
-</div></div></div>@endsection
+@extends('layouts.app')
+
+@section('title', 'Đăng ký')
+
+@section('content')
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h1 class="h4 mb-4">Đăng ký độc giả</h1>
+
+            <form method="POST" action="{{ route('register.store') }}">
+                @csrf
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="name">Họ và tên</label>
+                        <input
+                            id="name"
+                            class="form-control @error('name') is-invalid @enderror"
+                            type="text"
+                            name="name"
+                            value="{{ old('name') }}"
+                            autocomplete="name"
+                            required
+                        >
+                        @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="email">Email</label>
+                        <input
+                            id="email"
+                            class="form-control @error('email') is-invalid @enderror"
+                            type="email"
+                            name="email"
+                            value="{{ old('email') }}"
+                            autocomplete="email"
+                            required
+                        >
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="phone">Số điện thoại</label>
+                        <input
+                            id="phone"
+                            class="form-control @error('phone') is-invalid @enderror"
+                            type="tel"
+                            name="phone"
+                            value="{{ old('phone') }}"
+                            autocomplete="tel"
+                            inputmode="tel"
+                            placeholder="VD: 0912345678"
+                        >
+                        @error('phone')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="address">Địa chỉ</label>
+                        <input
+                            id="address"
+                            class="form-control @error('address') is-invalid @enderror"
+                            type="text"
+                            name="address"
+                            value="{{ old('address') }}"
+                            autocomplete="street-address"
+                        >
+                        @error('address')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="password">Mật khẩu</label>
+                        <input
+                            id="password"
+                            class="form-control @error('password') is-invalid @enderror"
+                            type="password"
+                            name="password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="password_confirmation">Nhập lại mật khẩu</label>
+                        <input
+                            id="password_confirmation"
+                            class="form-control @error('password_confirmation') is-invalid @enderror"
+                            type="password"
+                            name="password_confirmation"
+                            autocomplete="new-password"
+                            required
+                        >
+                        @error('password_confirmation')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Tạo tài khoản</button>
+                <a class="btn btn-link" href="{{ route('login') }}">Đã có tài khoản</a>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

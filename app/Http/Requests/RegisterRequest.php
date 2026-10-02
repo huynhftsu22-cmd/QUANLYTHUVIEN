@@ -15,23 +15,41 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['nullable', 'max:20'],
-            'address' => ['nullable', 'max:255'],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            // Phone is optional in the project scaffold. When provided, keep a
+            // Vietnamese mobile-number format instead of accepting arbitrary text.
+            'phone' => ['nullable', 'string', 'regex:/^(0|\+84)[0-9]{9,10}$/'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Vui lòng nhập họ và tên.',
-            'email.required' => 'Vui lòng nhập email.',
-            'email.email' => 'Email không đúng định dạng.',
-            'email.unique' => 'Email này đã được sử dụng.',
-            'password.required' => 'Vui lòng nhập mật khẩu.',
-            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+            'name.required' => 'Họ và tên không được để trống.',
+            'name.max' => 'Họ và tên không được dài quá 255 ký tự.',
+            'email.required' => 'Email không được để trống.',
+            'email.email' => 'Email phải là địa chỉ email hợp lệ.',
+            'email.max' => 'Email không được dài quá 255 ký tự.',
+            'email.unique' => 'Email đã tồn tại trong hệ thống.',
+            'phone.regex' => 'Số điện thoại không đúng định dạng.',
+            'address.max' => 'Địa chỉ không được dài quá 255 ký tự.',
+            'password.required' => 'Mật khẩu không được để trống.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'Họ và tên',
+            'email' => 'Email',
+            'phone' => 'Số điện thoại',
+            'address' => 'Địa chỉ',
+            'password' => 'Mật khẩu',
         ];
     }
 }

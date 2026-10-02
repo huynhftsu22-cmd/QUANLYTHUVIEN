@@ -11,62 +11,120 @@ class AuthFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_can_register_and_is_logged_in(): void
+    private function user(array $data = []): User
     {
-        $response = $this->post(route('register.store'), [
-            'name' => 'Nguyễn Văn A',
-            'email' => 'reader@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-        ]);
+        $number = User::query()->count() + 1;
 
-        $response->assertRedirect(route('books.index'));
+        return User::create(array_merge([
+            'user_code' => 'DG'.str_pad((string) $number, 4, '0', STR_PAD_LEFT),
+            'name' => 'Độc giả '.$number,
+            'email' => "user{$number}@test.local",
+            'password' => '12345678',
+            'role' => 'user',
+            'status' => 'active',
+        ], $data));
+    }
 
-        $user = User::where('email', 'reader@example.com')->firstOrFail();
+    public function test_registration_requires_valid_required_fields(): void
+    {
+        $this->post(route('register.store'), [
+            'name' => '',
+            'email' => 'not-an-email',
+            'password' => '123',
+            'password_confirmation' => '456',
+        ])->assertSessionHasErrors(['name', 'email', 'password']);
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_registration_rejects_duplicate_email(): void
+    {
+        $existing = $this->user(['email' => 'duplicate@example.com']);
+
+        $this->post(route('register.store'), [
+            'name' => 'Người mới',
+            'email' => $existing->email,
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_registration_rejects_invalid_phone_when_phone_is_provided(): void
+    {
+        $this->post(route('register.store'), [
+            'name' => 'Người mới',
+            'email' => 'phone@example.com',
+            'phone' => 'abc123',
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ])->assertSessionHasErrors('phone');
+
+        $this->assertDatabaseMissing('users', ['email' => 'phone@example.com']);
+    }
+
+    public function test_registration_generates_reader_code_and_hashes_password(): void
+    {
+        $this->post(route('register.store'), [
+            'name' => 'Người mới',
+            'email' => 'new@example.com',
+            'phone' => '0912345678',
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ])->assertRedirect(route('books.index'));
+
+        $user = User::where('email', 'new@example.com')->firstOrFail();
+
         $this->assertSame('DG0001', $user->user_code);
         $this->assertSame('user', $user->role);
         $this->assertSame('active', $user->status);
-        $this->assertTrue(Hash::check('password123', $user->password));
+        $this->assertTrue(Hash::check('12345678', $user->getRawOriginal('password')));
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_registration_rejects_duplicate_email_and_mismatched_password(): void
+    public function test_active_user_can_login_and_logout(): void
     {
-        User::create([
-            'user_code' => 'DG0001',
-            'name' => 'Người dùng cũ',
-            'email' => 'reader@example.com',
-            'password' => 'password123',
-            'role' => 'user',
-            'status' => 'active',
-        ]);
+        $user = $this->user(['email' => 'login@example.com']);
 
-        $this->from(route('register'))->post(route('register.store'), [
-            'name' => 'Người mới',
-            'email' => 'reader@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'different-password',
-        ])->assertRedirect(route('register'))
-            ->assertSessionHasErrors(['email', 'password']);
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => '12345678',
+        ])->assertRedirect(route('books.index'));
+
+        $this->assertAuthenticatedAs($user);
+
+        $this->post(route('logout'))
+            ->assertRedirect(route('books.index'))
+            ->assertSessionHas('success', 'Đã đăng xuất.');
+
+        $this->assertGuest();
+    }
+
+    public function test_wrong_password_is_rejected(): void
+    {
+        $user = $this->user(['email' => 'wrong-password@example.com']);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertGuest();
     }
 
     public function test_locked_and_deleted_users_cannot_login(): void
     {
         foreach (['locked', 'deleted'] as $status) {
-            $user = User::create([
-                'user_code' => 'DG'.($status === 'locked' ? '0001' : '0002'),
-                'name' => 'Độc giả',
+            $user = $this->user([
                 'email' => $status.'@example.com',
-                'password' => 'password123',
-                'role' => 'user',
                 'status' => $status,
             ]);
 
-            $this->from(route('login'))->post(route('login.store'), [
+            $this->post(route('login.store'), [
                 'email' => $user->email,
-                'password' => 'password123',
-            ])->assertRedirect(route('login'))
-                ->assertSessionHasErrors('email');
+                'password' => '12345678',
+            ])->assertSessionHasErrors('email');
 
             $this->assertGuest();
         }
@@ -74,37 +132,17 @@ class AuthFeatureTest extends TestCase
 
     public function test_admin_is_redirected_to_dashboard_after_login(): void
     {
-        $admin = User::create([
+        $admin = $this->user([
             'user_code' => 'NV0001',
-            'name' => 'Quản trị viên',
             'email' => 'admin@example.com',
-            'password' => 'password123',
             'role' => 'admin',
-            'status' => 'active',
         ]);
 
         $this->post(route('login.store'), [
             'email' => $admin->email,
-            'password' => 'password123',
+            'password' => '12345678',
         ])->assertRedirect(route('statistics.index'));
 
         $this->assertAuthenticatedAs($admin);
-    }
-
-    public function test_logout_invalidates_the_authenticated_session(): void
-    {
-        $user = User::create([
-            'user_code' => 'DG0001',
-            'name' => 'Độc giả',
-            'email' => 'reader@example.com',
-            'password' => 'password123',
-            'role' => 'user',
-            'status' => 'active',
-        ]);
-
-        $this->actingAs($user)->post(route('logout'))
-            ->assertRedirect(route('books.index'));
-
-        $this->assertGuest();
     }
 }
