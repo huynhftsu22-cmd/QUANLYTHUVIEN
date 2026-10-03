@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -23,35 +24,63 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    /**
+     * UC02 – Đăng ký tài khoản.
+     * user_code, role, status do hệ thống gán (BR-11); người dùng không được nhập.
+     */
     public function register(RegisterRequest $request): RedirectResponse
     {
-        $user = DB::transaction(function () use ($request) {
-            return User::create(array_merge($request->validated(), [
-                'user_code' => User::nextCode('user'), 'role' => 'user', 'status' => 'active',
-            ]));
+        $data = $request->validated();
+
+        $user = DB::transaction(function () use ($data) {
+            return User::create([
+                'user_code' => User::nextCode('user'),
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'password' => $data['password'], // cast 'hashed' của User tự băm bcrypt
+                'role' => 'user',
+                'status' => 'active',
+            ]);
         });
+
         Auth::login($user);
         $request->session()->regenerate();
 
         return redirect()->route('books.index')->with('success', 'Đăng ký tài khoản thành công.');
     }
 
-    public function login(Request $request): RedirectResponse
+    /**
+     * UC03 – Đăng nhập. Chặn tài khoản locked / deleted (BR-09, BR-10).
+     */
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required']]);
+        $credentials = $request->validated();
         $user = User::where('email', $credentials['email'])->first();
+
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
-            return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])->onlyInput('email');
+            return back()
+                ->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])
+                ->onlyInput('email');
         }
+
         if (! $user->isActive()) {
-            return back()->withErrors(['email' => 'Tài khoản đã bị khóa hoặc vô hiệu hóa.'])->onlyInput('email');
+            return back()
+                ->withErrors(['email' => 'Tài khoản đã bị khóa hoặc vô hiệu hóa.'])
+                ->onlyInput('email');
         }
+
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
-        return redirect()->intended($user->isAdmin() ? route('statistics.index') : route('books.index'));
+        return redirect()->intended(
+            $user->isAdmin() ? route('statistics.index') : route('books.index')
+        );
     }
 
+    /**
+     * UC03 – Đăng xuất.
+     */
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
