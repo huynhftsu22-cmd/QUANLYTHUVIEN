@@ -46,8 +46,8 @@ class AuthFeatureTest extends TestCase
         $this->post(route('register.store'), [
             'name' => 'Người mới',
             'email' => $existing->email,
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
         ])->assertSessionHasErrors('email');
 
         $this->assertDatabaseCount('users', 1);
@@ -58,8 +58,8 @@ class AuthFeatureTest extends TestCase
         $this->post(route('register.store'), [
             'name' => 'Người mới',
             'email' => 'new@example.com',
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
         ])->assertRedirect(route('books.index'));
 
         $user = User::where('email', 'new@example.com')->firstOrFail();
@@ -67,7 +67,7 @@ class AuthFeatureTest extends TestCase
         $this->assertSame('DG0001', $user->user_code);
         $this->assertSame('user', $user->role);
         $this->assertSame('active', $user->status);
-        $this->assertTrue(Hash::check('12345678', $user->getRawOriginal('password')));
+        $this->assertTrue(Hash::check('Matkhau123', $user->getRawOriginal('password')));
         $this->assertAuthenticatedAs($user);
     }
 
@@ -77,8 +77,8 @@ class AuthFeatureTest extends TestCase
             'name' => 'Người mới',
             'email' => 'contact@example.com',
             'phone' => '0901234567',
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
         ])->assertRedirect(route('books.index'));
 
         $this->assertDatabaseHas('users', [
@@ -93,22 +93,54 @@ class AuthFeatureTest extends TestCase
             'name' => 'Người mới',
             'email' => 'nophone@example.com',
             'phone' => '',
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
         ])->assertRedirect(route('books.index'));
 
         $this->assertNull(User::where('email', 'nophone@example.com')->firstOrFail()->phone);
     }
 
-    public function test_registration_rejects_too_long_phone(): void
+    public function test_registration_rejects_invalid_phone_numbers(): void
     {
-        $this->post(route('register.store'), [
-            'name' => 'Người mới',
-            'email' => 'long@example.com',
-            'phone' => str_repeat('1', 21),
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
-        ])->assertSessionHasErrors('phone');
+        foreach (['abc', '123', '0123456789', '090123456', '09012345678', '+8490123', '0901 234 567'] as $i => $phone) {
+            $this->post(route('register.store'), [
+                'name' => 'Người mới',
+                'email' => "badphone{$i}@example.com",
+                'phone' => $phone,
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
+            ])->assertSessionHasErrors('phone');
+        }
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_registration_accepts_valid_vietnamese_phone_numbers(): void
+    {
+        foreach (['0901234567', '+84901234567', '0381234567'] as $i => $phone) {
+            $this->post(route('register.store'), [
+                'name' => 'Người mới',
+                'email' => "goodphone{$i}@example.com",
+                'phone' => $phone,
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
+            ])->assertSessionHasNoErrors();
+
+            $this->assertDatabaseHas('users', ['email' => "goodphone{$i}@example.com", 'phone' => $phone]);
+            $this->post(route('logout'));
+        }
+    }
+
+    public function test_registration_rejects_weak_passwords(): void
+    {
+        foreach (['12345678', 'abcdefgh', 'ABCDEFGH1', 'abcdefg1', 'Abcdefgh', 'Ab1'] as $i => $password) {
+            $this->post(route('register.store'), [
+                'name' => 'Người mới',
+                'email' => "weak{$i}@example.com",
+                'password' => $password,
+                'password_confirmation' => $password,
+            ])->assertSessionHasErrors('password');
+        }
 
         $this->assertDatabaseCount('users', 0);
     }
@@ -118,8 +150,8 @@ class AuthFeatureTest extends TestCase
         $this->post(route('register.store'), [
             'name' => 'Kẻ tấn công',
             'email' => 'hacker@example.com',
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
             'user_code' => 'NV9999',
             'role' => 'admin',
             'status' => 'locked',
@@ -138,8 +170,8 @@ class AuthFeatureTest extends TestCase
             $this->post(route('register.store'), [
                 'name' => 'Độc giả '.$prefix,
                 'email' => $prefix.'@example.com',
-                'password' => '12345678',
-                'password_confirmation' => '12345678',
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
             ]);
             $this->post(route('logout'));
         }
