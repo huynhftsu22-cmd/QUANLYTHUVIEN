@@ -13,14 +13,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::create(['user_code' => 'NV0001', 'name' => 'Quản trị thư viện', 'email' => 'admin@example.com', 'password' => '12345678', 'role' => 'admin', 'status' => 'active', 'phone' => '0900000001', 'address' => 'Thư viện trung tâm']);
+        $admin = User::create(['user_code' => 'NV0001', 'name' => 'Quản trị thư viện', 'email' => 'admin@example.com', 'password' => '12345678', 'role' => 'admin', 'status' => 'active', 'phone' => '0900000001', 'address' => 'Phường Sài Gòn']);
         $users = collect([
             ['DG0001', 'Độc giả Demo', 'user@example.com'],
             ['DG0002', 'Nguyễn Minh Anh', 'minhanh@example.com'],
             ['DG0003', 'Trần Hoàng Nam', 'hoangnam@example.com'],
             ['DG0004', 'Lê Thu Hà', 'thuha@example.com'],
             ['DG0005', 'Phạm Quốc Bảo', 'quocbao@example.com'],
-        ])->map(fn ($item, $i) => User::create(['user_code' => $item[0], 'name' => $item[1], 'email' => $item[2], 'password' => '12345678', 'role' => 'user', 'status' => 'active', 'phone' => '09000000'.str_pad((string) ($i + 2), 2, '0', STR_PAD_LEFT)]));
+        ])->map(fn ($item, $i) => User::create(['user_code' => $item[0], 'name' => $item[1], 'email' => $item[2], 'password' => '12345678', 'role' => 'user', 'status' => 'active', 'phone' => '09000000'.str_pad((string) ($i + 2), 2, '0', STR_PAD_LEFT), 'address' => config('hcm_wards')[$i * 7]]));
 
         $authors = collect([
             ['Nguyễn Nhật Ánh', 'Nhà văn Việt Nam với nhiều tác phẩm dành cho tuổi mới lớn.'],

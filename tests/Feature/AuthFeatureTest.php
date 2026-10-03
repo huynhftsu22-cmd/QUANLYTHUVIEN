@@ -117,7 +117,7 @@ class AuthFeatureTest extends TestCase
 
     public function test_registration_accepts_valid_vietnamese_phone_numbers(): void
     {
-        foreach (['0901234567', '+84901234567', '0381234567'] as $i => $phone) {
+        foreach (['0901234567', '0381234567', '0771234567'] as $i => $phone) {
             $this->post(route('register.store'), [
                 'name' => 'Người mới',
                 'email' => "goodphone{$i}@example.com",
@@ -129,6 +129,102 @@ class AuthFeatureTest extends TestCase
             $this->assertDatabaseHas('users', ['email' => "goodphone{$i}@example.com", 'phone' => $phone]);
             $this->post(route('logout'));
         }
+    }
+
+    public function test_phone_with_plus84_is_stored_in_zero_format(): void
+    {
+        $this->post(route('register.store'), [
+            'name' => 'Người mới',
+            'email' => 'plus84@example.com',
+            'phone' => '+84901234567',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', ['email' => 'plus84@example.com', 'phone' => '0901234567']);
+    }
+
+    public function test_registration_rejects_duplicate_phone(): void
+    {
+        $this->user(['phone' => '0901234567']);
+
+        foreach (['0901234567', '+84901234567'] as $i => $phone) {
+            $this->post(route('register.store'), [
+                'name' => 'Người mới',
+                'email' => "dupphone{$i}@example.com",
+                'phone' => $phone,
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
+            ])->assertSessionHasErrors('phone');
+        }
+
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_registration_allows_many_accounts_without_phone(): void
+    {
+        foreach (['a', 'b'] as $prefix) {
+            $this->post(route('register.store'), [
+                'name' => 'Độc giả '.$prefix,
+                'email' => $prefix.'@example.com',
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
+            ])->assertSessionHasNoErrors();
+            $this->post(route('logout'));
+        }
+
+        $this->assertDatabaseCount('users', 2);
+    }
+
+    public function test_registration_saves_address_from_hcm_ward_list(): void
+    {
+        $this->post(route('register.store'), [
+            'name' => 'Người mới',
+            'email' => 'address@example.com',
+            'address' => 'Phường Bến Thành',
+            'password' => 'Matkhau123',
+            'password_confirmation' => 'Matkhau123',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', ['email' => 'address@example.com', 'address' => 'Phường Bến Thành']);
+    }
+
+    public function test_registration_rejects_address_outside_ward_list(): void
+    {
+        foreach (['Phường Không Tồn Tại', 'Quận 1', '123 Nguyễn Huệ'] as $i => $address) {
+            $this->post(route('register.store'), [
+                'name' => 'Người mới',
+                'email' => "badaddress{$i}@example.com",
+                'address' => $address,
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
+            ])->assertSessionHasErrors('address');
+        }
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_admin_cannot_set_duplicate_phone_or_invalid_address_when_editing_user(): void
+    {
+        $admin = $this->user(['user_code' => 'NV0001', 'role' => 'admin']);
+        $first = $this->user(['phone' => '0901234567']);
+        $second = $this->user(['phone' => '0912345678']);
+
+        $this->actingAs($admin)
+            ->put(route('users.update', $second), ['name' => $second->name, 'email' => $second->email, 'phone' => '+84901234567'])
+            ->assertSessionHasErrors('phone');
+
+        $this->actingAs($admin)
+            ->put(route('users.update', $second), ['name' => $second->name, 'email' => $second->email, 'phone' => '0912345678', 'address' => 'Nơi nào đó'])
+            ->assertSessionHasErrors('address');
+
+        // Giữ nguyên SĐT của chính mình và chọn phường hợp lệ thì lưu được.
+        $this->actingAs($admin)
+            ->put(route('users.update', $second), ['name' => $second->name, 'email' => $second->email, 'phone' => '0912345678', 'address' => 'Phường Gò Vấp'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', ['id' => $second->id, 'address' => 'Phường Gò Vấp']);
+        $this->assertSame('0901234567', $first->fresh()->phone);
     }
 
     public function test_registration_rejects_weak_passwords(): void

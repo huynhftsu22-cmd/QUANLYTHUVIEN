@@ -38,6 +38,7 @@ class AuthController extends Controller
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
+                'address' => $data['address'] ?? null,
                 'password' => $data['password'], // cast 'hashed' của User tự băm bcrypt
                 'role' => 'user',
                 'status' => 'active',

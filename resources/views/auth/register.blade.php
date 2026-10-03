@@ -60,6 +60,11 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label" for="address">Địa chỉ (Phường, TP. Hồ Chí Minh)</label>
+                    @include('partials.ward-select', ['selected' => old('address')])
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label" for="password">Mật khẩu</label>
                     <input
                         id="password"

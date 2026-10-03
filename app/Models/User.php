@@ -59,6 +59,19 @@ class User extends Authenticatable
         return $this->status === 'active';
     }
 
+    /**
+     * Chuẩn hóa SĐT về dạng 0xxxxxxxxx để chặn trùng số dù nhập +84901234567 hay 0901234567.
+     * Chuỗi không đúng định dạng được giữ nguyên để validate báo lỗi như bình thường.
+     */
+    public static function normalizePhone(?string $phone): ?string
+    {
+        if ($phone === null) {
+            return null;
+        }
+
+        return preg_match('/^\+84([35789][0-9]{8})$/', $phone, $m) ? '0'.$m[1] : $phone;
+    }
+
     public static function nextCode(string $role): string
     {
         $prefix = $role === 'admin' ? 'NV' : 'DG';

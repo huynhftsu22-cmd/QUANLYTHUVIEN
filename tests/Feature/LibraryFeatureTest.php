@@ -60,11 +60,11 @@ class LibraryFeatureTest extends TestCase
 
     public function test_registration_generates_reader_code_and_hashes_password(): void
     {
-        $this->post('/register', ['name' => 'Người mới', 'email' => 'new@example.com', 'password' => '12345678', 'password_confirmation' => '12345678'])->assertRedirect('/books');
+        $this->post('/register', ['name' => 'Người mới', 'email' => 'new@example.com', 'password' => 'Matkhau123', 'password_confirmation' => 'Matkhau123'])->assertRedirect('/books');
         $user = User::where('email', 'new@example.com')->firstOrFail();
         $this->assertSame('DG0001', $user->user_code);
         $this->assertSame('user', $user->role);
-        $this->assertNotSame('12345678', $user->getRawOriginal('password'));
+        $this->assertNotSame('Matkhau123', $user->getRawOriginal('password'));
     }
 
     public function test_locked_and_deleted_accounts_cannot_log_in(): void
