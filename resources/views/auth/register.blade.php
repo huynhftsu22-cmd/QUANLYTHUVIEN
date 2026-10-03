@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="phone">Số điện thoại <span class="text-muted small">(không bắt buộc)</span></label>
+                    <label class="form-label" for="phone">Số điện thoại</label>
                     <input
                         id="phone"
                         class="form-control @error('phone') is-invalid @enderror"
