@@ -34,7 +34,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             // SĐT di động Việt Nam: 0 hoặc +84, đầu số 3/5/7/8/9, tổng 10 số.
             // Sau chuẩn hóa chỉ còn dạng 0xxxxxxxxx; mỗi SĐT chỉ được dùng cho một tài khoản.
-            'phone' => ['nullable', 'string', 'regex:/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/', 'unique:users,phone'],
+            'phone' => ['required', 'string', 'regex:/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/', 'unique:users,phone'],
             // Địa chỉ: chọn một phường của TP.HCM trong danh sách (config/hcm_wards.php).
             'address' => ['nullable', 'string', Rule::in(config('hcm_wards'))],
             // Mật khẩu: tối thiểu 8 ký tự, có chữ hoa, chữ thường và chữ số.
@@ -54,6 +54,7 @@ class RegisterRequest extends FormRequest
             'email.email' => 'Email phải là địa chỉ email hợp lệ.',
             'email.max' => 'Email không được dài quá 255 ký tự.',
             'email.unique' => 'Email đã tồn tại trong hệ thống.',
+            'phone.required' => 'Số điện thoại không được để trống.',
             'phone.regex' => 'Số điện thoại không hợp lệ (ví dụ: 0901234567 hoặc +84901234567).',
             'phone.unique' => 'Số điện thoại đã được sử dụng bởi tài khoản khác.',
             'address.in' => 'Vui lòng chọn phường trong danh sách của Thành phố Hồ Chí Minh.',
