@@ -27,7 +27,7 @@ class LibraryFeatureTest extends TestCase
     {
         $number = ++self::$userSequence;
 
-        return User::create(array_merge(['user_code' => 'DG'.str_pad((string) $number, 4, '0', STR_PAD_LEFT), 'name' => 'Độc giả '.$number, 'email' => "user{$number}@test.local", 'password' => '12345678', 'role' => 'user', 'status' => 'active'], $data));
+        return User::create(array_merge(['user_code' => 'DG'.str_pad((string) $number, 4, '0', STR_PAD_LEFT), 'name' => 'Độc giả '.$number, 'email' => "user{$number}@test.local", 'phone' => '0900'.str_pad((string) $number, 6, '0', STR_PAD_LEFT), 'password' => '12345678', 'role' => 'user', 'status' => 'active'], $data));
     }
 
     private function book(array $data = []): Book
@@ -60,7 +60,7 @@ class LibraryFeatureTest extends TestCase
 
     public function test_registration_generates_reader_code_and_hashes_password(): void
     {
-        $this->post('/register', ['name' => 'Người mới', 'email' => 'new@example.com', 'password' => 'Matkhau123', 'password_confirmation' => 'Matkhau123'])->assertRedirect('/books');
+        $this->post('/register', ['name' => 'Người mới', 'email' => 'new@example.com', 'phone' => '0901234567', 'password' => 'Matkhau123', 'password_confirmation' => 'Matkhau123'])->assertRedirect('/books');
         $user = User::where('email', 'new@example.com')->firstOrFail();
         $this->assertSame('DG0001', $user->user_code);
         $this->assertSame('user', $user->role);

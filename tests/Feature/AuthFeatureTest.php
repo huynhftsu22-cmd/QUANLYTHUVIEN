@@ -19,6 +19,7 @@ class AuthFeatureTest extends TestCase
             'user_code' => 'DG'.str_pad((string) $number, 4, '0', STR_PAD_LEFT),
             'name' => 'Độc giả '.$number,
             'email' => "user{$number}@test.local",
+            'phone' => '0900'.str_pad((string) $number, 6, '0', STR_PAD_LEFT),
             'password' => '12345678',
             'role' => 'user',
             'status' => 'active',
@@ -32,9 +33,10 @@ class AuthFeatureTest extends TestCase
         $this->post(route('register.store'), [
             'name' => '',
             'email' => 'not-an-email',
+            'phone' => '',
             'password' => '123',
             'password_confirmation' => '456',
-        ])->assertSessionHasErrors(['name', 'email', 'password']);
+        ])->assertSessionHasErrors(['name', 'email', 'phone', 'password']);
 
         $this->assertDatabaseCount('users', 0);
     }
@@ -58,6 +60,7 @@ class AuthFeatureTest extends TestCase
         $this->post(route('register.store'), [
             'name' => 'Người mới',
             'email' => 'new@example.com',
+            'phone' => '0901234567',
             'password' => 'Matkhau123',
             'password_confirmation' => 'Matkhau123',
         ])->assertRedirect(route('books.index'));
@@ -71,7 +74,7 @@ class AuthFeatureTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_registration_saves_optional_phone(): void
+    public function test_registration_saves_phone(): void
     {
         $this->post(route('register.store'), [
             'name' => 'Người mới',
@@ -87,17 +90,23 @@ class AuthFeatureTest extends TestCase
         ]);
     }
 
-    public function test_registration_allows_empty_phone(): void
+    public function test_registration_requires_phone(): void
     {
-        $this->post(route('register.store'), [
-            'name' => 'Người mới',
-            'email' => 'nophone@example.com',
-            'phone' => '',
-            'password' => 'Matkhau123',
-            'password_confirmation' => 'Matkhau123',
-        ])->assertRedirect(route('books.index'));
+        foreach (['', null] as $i => $phone) {
+            $data = [
+                'name' => 'Người mới',
+                'email' => "nophone{$i}@example.com",
+                'password' => 'Matkhau123',
+                'password_confirmation' => 'Matkhau123',
+            ];
+            if ($phone !== null) {
+                $data['phone'] = $phone;
+            }
 
-        $this->assertNull(User::where('email', 'nophone@example.com')->firstOrFail()->phone);
+            $this->post(route('register.store'), $data)->assertSessionHasErrors('phone');
+        }
+
+        $this->assertDatabaseCount('users', 0);
     }
 
     public function test_registration_rejects_invalid_phone_numbers(): void
@@ -161,26 +170,12 @@ class AuthFeatureTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
-    public function test_registration_allows_many_accounts_without_phone(): void
-    {
-        foreach (['a', 'b'] as $prefix) {
-            $this->post(route('register.store'), [
-                'name' => 'Độc giả '.$prefix,
-                'email' => $prefix.'@example.com',
-                'password' => 'Matkhau123',
-                'password_confirmation' => 'Matkhau123',
-            ])->assertSessionHasNoErrors();
-            $this->post(route('logout'));
-        }
-
-        $this->assertDatabaseCount('users', 2);
-    }
-
     public function test_registration_saves_address_from_hcm_ward_list(): void
     {
         $this->post(route('register.store'), [
             'name' => 'Người mới',
             'email' => 'address@example.com',
+            'phone' => '0901234567',
             'address' => 'Phường Bến Thành',
             'password' => 'Matkhau123',
             'password_confirmation' => 'Matkhau123',
@@ -227,6 +222,18 @@ class AuthFeatureTest extends TestCase
         $this->assertSame('0901234567', $first->fresh()->phone);
     }
 
+    public function test_admin_cannot_clear_phone_when_editing_user(): void
+    {
+        $admin = $this->user(['user_code' => 'NV0001', 'role' => 'admin']);
+        $reader = $this->user(['phone' => '0912345678']);
+
+        $this->actingAs($admin)
+            ->put(route('users.update', $reader), ['name' => $reader->name, 'email' => $reader->email, 'phone' => ''])
+            ->assertSessionHasErrors('phone');
+
+        $this->assertSame('0912345678', $reader->fresh()->phone);
+    }
+
     public function test_registration_rejects_weak_passwords(): void
     {
         foreach (['12345678', 'abcdefgh', 'ABCDEFGH1', 'abcdefg1', 'Abcdefgh', 'Ab1'] as $i => $password) {
@@ -246,6 +253,7 @@ class AuthFeatureTest extends TestCase
         $this->post(route('register.store'), [
             'name' => 'Kẻ tấn công',
             'email' => 'hacker@example.com',
+            'phone' => '0901234567',
             'password' => 'Matkhau123',
             'password_confirmation' => 'Matkhau123',
             'user_code' => 'NV9999',
@@ -266,6 +274,7 @@ class AuthFeatureTest extends TestCase
             $this->post(route('register.store'), [
                 'name' => 'Độc giả '.$prefix,
                 'email' => $prefix.'@example.com',
+                'phone' => '090123456'.$i,
                 'password' => 'Matkhau123',
                 'password_confirmation' => 'Matkhau123',
             ]);

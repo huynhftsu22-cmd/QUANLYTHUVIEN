@@ -37,7 +37,7 @@ class AuthController extends Controller
                 'user_code' => User::nextCode('user'),
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'phone' => $data['phone'] ?? null,
+                'phone' => $data['phone'],
                 'address' => $data['address'] ?? null,
                 'password' => $data['password'], // cast 'hashed' của User tự băm bcrypt
                 'role' => 'user',

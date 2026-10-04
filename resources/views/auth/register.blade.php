@@ -6,13 +6,13 @@
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
         <div class="card p-4">
-            <h1 class="h4 mb-4">Đăng ký độc giả</h1>
+            <h1 class="h4 mb-2">Đăng ký độc giả</h1>
 
             <form method="POST" action="{{ route('register.store') }}" novalidate>
                 @csrf
 
                 <div class="mb-3">
-                    <label class="form-label" for="name">Họ và tên</label>
+                    <label class="form-label" for="name">Họ và tên <span class="text-danger">*</span></label>
                     <input
                         id="name"
                         class="form-control @error('name') is-invalid @enderror"
@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="email">Email</label>
+                    <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
                     <input
                         id="email"
                         class="form-control @error('email') is-invalid @enderror"
@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Số điện thoại <span class="text-danger">*</span></label>
+                    <label class="form-label" for="phone">Số điện thoại <span class="text-danger">*</span></label>
                     <input
                         id="phone"
                         class="form-control @error('phone') is-invalid @enderror"
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="password">Mật khẩu</label>
+                    <label class="form-label" for="password">Mật khẩu <span class="text-danger">*</span></label>
                     <input
                         id="password"
                         class="form-control @error('password') is-invalid @enderror"
@@ -81,7 +81,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="password_confirmation">Nhập lại mật khẩu</label>
+                    <label class="form-label" for="password_confirmation">Nhập lại mật khẩu <span class="text-danger">*</span></label>
                     <input
                         id="password_confirmation"
                         class="form-control"

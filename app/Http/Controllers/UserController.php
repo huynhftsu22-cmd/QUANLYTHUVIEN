@@ -40,9 +40,10 @@ class UserController extends Controller
         $user->update($request->validate([
             'name' => ['required', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users')->ignore($user)],
-            'phone' => ['nullable', 'string', 'regex:/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/', Rule::unique('users', 'phone')->ignore($user)],
+            'phone' => ['required', 'string', 'regex:/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/', Rule::unique('users', 'phone')->ignore($user)],
             'address' => ['nullable', 'string', Rule::in(config('hcm_wards'))],
         ], [
+            'phone.required' => 'Số điện thoại không được để trống.',
             'phone.regex' => 'Số điện thoại không hợp lệ (ví dụ: 0901234567 hoặc +84901234567).',
             'phone.unique' => 'Số điện thoại đã được sử dụng bởi tài khoản khác.',
             'address.in' => 'Vui lòng chọn phường trong danh sách của Thành phố Hồ Chí Minh.',
