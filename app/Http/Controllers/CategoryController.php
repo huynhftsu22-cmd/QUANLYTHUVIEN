@@ -51,6 +51,6 @@ class CategoryController extends Controller
 
     private function validated(Request $request, ?Category $category = null): array
     {
-        return $request->validate(['name' => ['required', 'max:255', Rule::unique('categories')->ignore($category)], 'description' => ['nullable', 'string']]);
+        return $request->validate(['name' => ['required', 'max:255', Rule::unique('categories')->ignore($category)], 'description' => ['nullable', 'string']], [], ['name' => 'Tên thể loại', 'description' => 'Mô tả']);
     }
 }

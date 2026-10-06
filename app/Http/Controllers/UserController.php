@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    private const ATTRIBUTES = [
+        'name' => 'Họ tên', 'email' => 'Email', 'phone' => 'Số điện thoại',
+        'address' => 'Địa chỉ', 'role' => 'Vai trò', 'password' => 'Mật khẩu',
+    ];
+
     public function index(Request $request): View
     {
         $query = User::query()->when($request->filled('q'), function ($q) use ($request) {
@@ -18,6 +25,31 @@ class UserController extends Controller
         })->when(in_array($request->status, ['active', 'locked', 'deleted'], true), fn ($q) => $q->where('status', $request->status));
 
         return view('users.index', ['users' => $query->latest()->paginate(15)->withQueryString()]);
+    }
+
+    public function create(): View
+    {
+        return view('users.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['nullable', 'max:20'],
+            'address' => ['nullable', 'max:255'],
+            'role' => ['required', Rule::in(['user', 'admin'])],
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ], ['role.in' => 'Vai trò không hợp lệ.'], self::ATTRIBUTES);
+
+        // BR-11: user_code tự sinh theo vai trò (DG cho độc giả, NV cho admin), không nhận từ form.
+        $user = DB::transaction(fn () => User::create(array_merge($data, [
+            'user_code' => User::nextCode($data['role']),
+            'status' => 'active',
+        ])));
+
+        return redirect()->route('users.show', $user)->with('success', "Đã tạo tài khoản {$user->user_code}.");
     }
 
     public function show(User $user): View
@@ -35,7 +67,7 @@ class UserController extends Controller
         $user->update($request->validate([
             'name' => ['required', 'max:255'], 'email' => ['required', 'email', Rule::unique('users')->ignore($user)],
             'phone' => ['nullable', 'max:20'], 'address' => ['nullable', 'max:255'],
-        ]));
+        ], [], self::ATTRIBUTES));
 
         return redirect()->route('users.show', $user)->with('success', 'Đã cập nhật người dùng.');
     }
@@ -44,6 +76,9 @@ class UserController extends Controller
     {
         if ($request->user()->is($user)) {
             return back()->with('error', 'Không thể tự khóa tài khoản đang đăng nhập.');
+        }
+        if ($user->status !== 'active') {
+            return back()->with('error', 'Chỉ có thể khóa tài khoản đang hoạt động.');
         }
         $user->update(['status' => 'locked']);
 
