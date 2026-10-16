@@ -22,7 +22,7 @@ class BookRequest extends FormRequest
             'author_id' => ['required', 'exists:authors,id'],
             'category_id' => ['required', 'exists:categories,id'],
             'publisher' => ['nullable', 'max:255'],
-            'publication_year' => ['nullable', 'integer', 'min:1000', 'max:'.(date('Y') + 1)],
+            'publication_year' => ['nullable', 'integer', 'min:1900', 'max:'.date('Y')],
             'total_quantity' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

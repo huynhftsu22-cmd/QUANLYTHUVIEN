@@ -7,7 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -34,14 +33,25 @@ class UserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if (is_string($request->input('phone'))) {
+            $request->merge(['phone' => User::normalizePhone($request->input('phone'))]);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['nullable', 'max:20'],
-            'address' => ['nullable', 'max:255'],
+            'phone' => ['required', 'string', 'regex:/^0[35789][0-9]{8}$/', Rule::unique('users', 'phone')],
+            'address' => ['nullable', 'string', Rule::in(config('hcm_wards'))],
             'role' => ['required', Rule::in(['user', 'admin'])],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ], ['role.in' => 'Vai trò không hợp lệ.'], self::ATTRIBUTES);
+            'password' => ['required', 'string', 'confirmed', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
+        ], [
+            'role.in' => 'Vai trò không hợp lệ.',
+            'phone.required' => 'Số điện thoại không được để trống.',
+            'phone.regex' => 'Số điện thoại không hợp lệ (ví dụ: 0901234567 hoặc +84901234567).',
+            'phone.unique' => 'Số điện thoại đã được sử dụng bởi tài khoản khác.',
+            'address.in' => 'Vui lòng chọn phường trong danh sách của Thành phố Hồ Chí Minh.',
+            'password.regex' => 'Mật khẩu phải có đủ chữ hoa, chữ thường và chữ số.',
+        ], self::ATTRIBUTES);
 
         // BR-11: user_code tự sinh theo vai trò (DG cho độc giả, NV cho admin), không nhận từ form.
         $user = DB::transaction(fn () => User::create(array_merge($data, [

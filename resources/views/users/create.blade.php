@@ -7,13 +7,17 @@
     <form method="POST" action="{{ route('users.store') }}">
         @csrf
         <div class="row">
-            @foreach(['name' => 'Họ tên', 'email' => 'Email', 'phone' => 'Số điện thoại', 'address' => 'Địa chỉ'] as $field => $label)
+            @foreach(['name' => 'Họ tên', 'email' => 'Email', 'phone' => 'Số điện thoại'] as $field => $label)
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ $label }} @if(in_array($field, ['name', 'email']))<span class="text-danger">*</span>@endif</label>
-                    <input class="form-control @error($field) is-invalid @enderror" type="{{ $field === 'email' ? 'email' : 'text' }}" name="{{ $field }}" value="{{ old($field) }}" {{ in_array($field, ['name', 'email']) ? 'required' : '' }}>
+                    <label class="form-label" for="{{ $field }}">{{ $label }} <span class="text-danger">*</span></label>
+                    <input id="{{ $field }}" class="form-control @error($field) is-invalid @enderror" type="{{ $field === 'email' ? 'email' : ($field === 'phone' ? 'tel' : 'text') }}" name="{{ $field }}" value="{{ old($field) }}" required>
                     @error($field)<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             @endforeach
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="address">Địa chỉ (Phường, TP. Hồ Chí Minh)</label>
+                @include('partials.ward-select', ['selected' => old('address')])
+            </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Vai trò <span class="text-danger">*</span></label>
                 <select class="form-select @error('role') is-invalid @enderror" name="role">
