@@ -87,7 +87,7 @@ class LibraryFeatureTest extends TestCase
         $user = $this->user();
         $book = $this->book();
         app(BorrowService::class)->borrow($user, $book);
-        $this->assertDatabaseHas('borrow_records', ['user_id' => $user->id, 'book_id' => $book->id, 'borrow_date' => '2026-09-01', 'due_date' => '2026-09-15', 'status' => 'borrowing']);
+        $this->assertDatabaseHas('borrow_records', ['user_id' => $user->id, 'book_id' => $book->id, 'borrow_date' => '2026-09-01 00:00:00', 'due_date' => '2026-09-15 00:00:00', 'status' => 'borrowing']);
         $this->assertSame(1, $book->fresh()->available);
         Carbon::setTestNow();
     }

@@ -30,7 +30,6 @@ class BorrowFeatureTest extends TestCase
     }
 
     // ------------------------------------------------------------------ helpers
-
 private function reader(array $data = []): User
 {
     $n = ++self::$sequence;
@@ -62,7 +61,7 @@ private function admin(): User
 }
 
 
-    private function book(array $data = []): Book
+private function book(array $data = []): Book
     {
         $n = ++self::$sequence;
         $author = Author::create(['name' => 'Tác giả '.$n]);
@@ -105,7 +104,7 @@ private function admin(): User
         $this->fail('Thao tác lẽ ra phải bị từ chối: '.$message);
     }
 
-    /** @return list<int> id các phiếu đang hiển thị trên trang, đã sắp xếp. */
+     /** @return list<int> id các phiếu đang hiển thị trên trang, đã sắp xếp. */
     private function listedIds($response): array
     {
         return $response->viewData('records')->getCollection()->pluck('id')->sort()->values()->all();
@@ -127,8 +126,8 @@ private function admin(): User
         $this->assertDatabaseHas('borrow_records', [
             'user_id' => $reader->id,
             'book_id' => $book->id,
-            'borrow_date' => '2026-09-01',
-            'due_date' => '2026-09-15',
+            'borrow_date' => '2026-09-01 00:00:00',
+            'due_date' => '2026-09-15 00:00:00',
             'return_date' => null,
             'status' => 'borrowing',
             'fine_amount' => 0,
@@ -164,6 +163,8 @@ private function admin(): User
 
     public function test_uc04_service_rejects_locked_and_deleted_accounts(): void
     {
+        $book = $this->book();
+
         $book = $this->book();
 
         foreach (['locked', 'deleted'] as $status) {
@@ -533,3 +534,6 @@ private function admin(): User
         $this->assertFalse($record->fresh()->is_paid);
     }
 }
+
+
+
