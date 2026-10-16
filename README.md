@@ -134,8 +134,8 @@ Giữ Terminal này hoạt động để hệ thống tự động cập nhật 
 
 | Vai trò | Email | Mật khẩu |
 |---|---|---|
-| Admin | `admin@example.com` | `12345678` |
-| Độc giả | `user@example.com` | `12345678` |
+| Admin | `admin@example.com` | `Password123` |
+| Độc giả | `user@example.com` | `Password123` |
 
 Seeder tạo 1 admin, 5 độc giả, 5 tác giả, 5 thể loại, 18 sách và một số phiếu mượn mẫu.
 
