@@ -43,7 +43,7 @@ Website quản lý thư viện được xây dựng bằng Laravel 12, Blade, Bo
 Sao chép thư mục dự án vào:
 
 ```text
-C:\laragon\www\qlthuvien
+C:\laragon\www\QUANLYTHUVIEN
 ```
 
 ### 2. Cài dependency
