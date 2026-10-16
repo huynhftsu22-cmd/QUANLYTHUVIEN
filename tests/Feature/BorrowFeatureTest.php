@@ -31,33 +31,36 @@ class BorrowFeatureTest extends TestCase
 
     // ------------------------------------------------------------------ helpers
 
-    private function reader(array $data = []): User
-    {
-        $n = ++self::$sequence;
+private function reader(array $data = []): User
+{
+    $n = ++self::$sequence;
 
-        return User::create(array_merge([
-            'user_code' => 'DG'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
-            'name' => 'Độc giả '.$n,
-            'email' => "reader{$n}@borrow.test",
-            'password' => '12345678',
-            'role' => 'user',
-            'status' => 'active',
-        ], $data));
-    }
+    return User::create(array_merge([
+        'user_code' => 'DG'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+        'name' => 'Độc giả '.$n,
+        'email' => "reader{$n}@borrow.test",
+        'phone' => '09'.str_pad((string) $n, 8, '0', STR_PAD_LEFT),
+        'password' => 'Password123',
+        'role' => 'user',
+        'status' => 'active',
+    ], $data));
+}
 
-    private function admin(): User
-    {
-        $n = ++self::$sequence;
+private function admin(): User
+{
+    $n = ++self::$sequence;
 
-        return User::create([
-            'user_code' => 'NV'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
-            'name' => 'Quản trị '.$n,
-            'email' => "admin{$n}@borrow.test",
-            'password' => '12345678',
-            'role' => 'admin',
-            'status' => 'active',
-        ]);
-    }
+    return User::create([
+        'user_code' => 'NV'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+        'name' => 'Quản trị '.$n,
+        'email' => "admin{$n}@borrow.test",
+        'phone' => '08'.str_pad((string) $n, 8, '0', STR_PAD_LEFT),
+        'password' => 'Password123',
+        'role' => 'admin',
+        'status' => 'active',
+    ]);
+}
+
 
     private function book(array $data = []): Book
     {
