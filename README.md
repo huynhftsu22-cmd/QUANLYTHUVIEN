@@ -51,7 +51,7 @@ C:\laragon\www\QUANLYTHUVIEN
 Mở **Terminal** trong Laragon, sau đó chạy:
 
 ```bash
-cd C:\laragon\www\qlthuvien
+C:\laragon\www\QUANLYTHUVIEN
 composer install
 ```
 
