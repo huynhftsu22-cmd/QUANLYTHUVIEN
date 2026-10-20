@@ -1,175 +1,31 @@
-# Website Quản lý thư viện
+# Say Sách — Quản lý thư viện
 
-Website quản lý thư viện được xây dựng bằng Laravel 12, Blade, Bootstrap và MySQL. Hệ thống hỗ trợ khách, độc giả, quản trị viên và tiến trình tự động cập nhật phiếu quá hạn.
+Ứng dụng Laravel quản lý danh mục, độc giả, bản sao sách, đặt giữ, bàn giao, trả sách, thẻ thành viên và thanh toán.
 
-## Công nghệ sử dụng
+Hướng dẫn cập nhật và cài mới: **HUONG_DAN_CAP_NHAT_20_10.txt**. Thông tin các ấn bản: **CATALOG_SOURCES.md**.
 
-- PHP 8.2 trở lên.
-- Laravel 12.
-- MySQL 8 hoặc MariaDB tương thích.
-- Blade Template Engine và Bootstrap 5.
-- Laravel Session Authentication, Middleware, Validation và Scheduler.
-- Composer và Artisan CLI.
+## Cập nhật project hiện có
 
-Ứng dụng không sử dụng React, Vue hoặc framework SPA.
-
-## Chức năng chính
-
-### Khách và độc giả
-
-- Xem sách đang hoạt động theo dạng lưới có ảnh bìa.
-- Tìm theo tên hoặc mã sách; lọc theo tác giả và thể loại.
-- Xem chi tiết sách, đăng ký, đăng nhập và đăng xuất.
-- Độc giả được mượn sách trực tiếp khi đáp ứng các quy tắc nghiệp vụ.
-- Xem lịch sử mượn, hạn trả, trạng thái và tiền phạt của chính mình.
-
-### Quản trị viên
-
-- Dashboard thống kê sách, phiếu mượn và tiền phạt.
-- Quản lý sách, ảnh bìa, tác giả, thể loại và người dùng.
-- Tìm sách theo từ khóa, tác giả, thể loại và trạng thái.
-- Ẩn hoặc hiện lại sách mà không xóa dữ liệu vật lý.
-- Quản lý phiếu mượn, xác nhận trả sách và thu tiền phạt.
-
-### Hệ thống
-
-- Scheduler chạy hằng ngày để chuyển phiếu `borrowing` đã quá hạn sang `overdue`.
-- Nghiệp vụ mượn/trả sử dụng database transaction và row lock.
-
-## Cài đặt bằng Laragon
-
-### 1. Đặt mã nguồn vào Laragon
-
-Sao chép thư mục dự án vào:
-
-```text
-C:\laragon\www\qlthuvien
-```
-
-### 2. Cài dependency
-
-Mở **Terminal** trong Laragon, sau đó chạy:
+Giữ nguyên `.env` và ảnh tải lên trong `storage/app/public`, chép mã nguồn mới rồi chạy:
 
 ```bash
-cd C:\laragon\www\qlthuvien
-composer install
-```
-
-### 3. Tạo database và cấu hình môi trường
-
-Bật **Apache** và **MySQL** trong Laragon. Dùng HeidiSQL hoặc phpMyAdmin tạo database trống:
-
-```text
-qlthuvien
-```
-
-Sao chép file môi trường:
-
-```bat
-copy .env.example .env
-```
-
-Cập nhật kết nối MySQL trong `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=qlthuvien
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Nếu MySQL của Laragon có mật khẩu, điền mật khẩu tương ứng vào `DB_PASSWORD`.
-
-### 4. Tạo application key
-
-```bash
-php artisan key:generate
-```
-
-### 5. Tạo liên kết lưu ảnh bìa
-
-```bash
+php artisan optimize:clear
+php artisan library:sync-catalog
 php artisan storage:link
 ```
 
-Ảnh tải lên được lưu trong `storage/app/public/book-covers` và truy cập thông qua `public/storage`.
+Nhấn Ctrl + F5 để nạp CSS mới. Lệnh đồng bộ giữ nguyên các bản sao sách và phiếu mượn. Những sách mới thêm không tự phát sinh tồn kho; nhập bản sao thực tế trong trang quản lý sách.
 
-### 6. Tạo bảng và nạp dữ liệu demo
-
-```bash
-php artisan migrate --seed
-```
-
-Nếu cần xóa toàn bộ dữ liệu hiện có và tạo lại từ đầu:
+## Kiểm thử
 
 ```bash
-php artisan migrate:fresh --seed
+php vendor/bin/phpunit
 ```
 
-### 7. Chạy website
+Bản này đạt 39 bài kiểm thử, 286 assertions trên PHP 8.3 / SQLite. Chưa xác nhận hiển thị bằng trình duyệt Windows/Laragon.
 
-```bash
-php artisan serve --host=localhost --port=8000
-```
+## Bản sửa V2
 
-Giữ Terminal hoạt động và truy cập:
+Font tiêu đề tiếng Việt được nhúng trong `public/fonts`. Chọn số ngày tại chi tiết sách sẽ cập nhật tiền thuê, tiền cọc và tổng thanh toán từ máy chủ. Trang độc giả có thẻ thành viên riêng; đặt trùng sách hiện thông báo trên trang. Lịch sử và đối soát hiển thị rõ tiền cọc đã hoàn lại, khấu trừ và còn giữ.
 
-```text
-http://localhost:8000
-```
-
-### 8. Chạy Scheduler
-
-Mở Terminal thứ hai tại thư mục dự án và chạy:
-
-```bash
-php artisan schedule:work
-```
-
-Giữ Terminal này hoạt động để hệ thống tự động cập nhật phiếu quá hạn.
-
-## Tài khoản demo
-
-| Vai trò | Email | Mật khẩu |
-|---|---|---|
-| Admin | `admin@example.com` | `12345678` |
-| Độc giả | `user@example.com` | `12345678` |
-
-Seeder tạo 1 admin, 5 độc giả, 5 tác giả, 5 thể loại, 18 sách và một số phiếu mượn mẫu.
-
-## Cấu hình nghiệp vụ
-
-Các cấu hình nằm trong `config/library.php`:
-
-- Thời hạn mượn: 14 ngày.
-- Số đầu sách được mượn đồng thời: 3.
-- Tiền phạt mặc định: 2.000 VNĐ/ngày/cuốn.
-
-Có thể thay đổi mức phạt trong `.env`:
-
-```env
-LIBRARY_FINE_PER_DAY=2000
-```
-
-## Các lệnh hữu ích
-
-```bash
-php artisan route:list
-php artisan library:mark-overdue
-php artisan test
-./vendor/bin/pint --test
-```
-
-## Cấu trúc route
-
-- `/books`: trang sách phía client.
-- `/login`, `/register`: xác thực.
-- `/history`: lịch sử mượn của độc giả.
-- `/admin/statistics`: dashboard quản trị.
-- `/admin/books`: quản lý sách.
-- `/admin/authors`: quản lý tác giả.
-- `/admin/categories`: quản lý thể loại.
-- `/admin/users`: quản lý người dùng.
-- `/admin/borrow-records`: quản lý mượn – trả.
+Nếu đã dùng bản trước, giữ `.env` và `storage/app/public`, cập nhật mã nguồn rồi chạy `php artisan optimize:clear`; không cần thay đổi cấu trúc database.

@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'user_code' => 'DG'.fake()->unique()->numerify('####'),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->numerify('09########'),
+            'phone' => fake()->unique()->numerify('09########'),
             'address' => fake()->address(),
             'password' => static::$password ??= Hash::make('password'),
             'role' => 'user',

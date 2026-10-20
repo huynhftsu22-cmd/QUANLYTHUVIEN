@@ -1,56 +1,13 @@
 @extends('layouts.app')
-
-@section('title', $book->exists ? 'Sửa sách' : 'Thêm sách')
-
+@section('title', $book->exists ? 'Chỉnh sửa sách' : 'Thêm sách mới')
 @section('content')
-<div class="card p-4">
-    <h1 class="h3 mb-2">{{ $book->exists ? 'Chỉnh sửa sách' : 'Thêm sách mới' }}</h1>
-    @if($book->exists)<p class="text-muted"></p>@endif
-    <form method="POST" enctype="multipart/form-data" action="{{ $book->exists ? route('books.update', $book) : route('books.store') }}">
-        @csrf
-        @if($book->exists) @method('PUT') @endif
-        <div class="row">
-            @foreach(['book_code' => 'Mã sách', 'title' => 'Tên sách', 'publisher' => 'Nhà xuất bản', 'publication_year' => 'Năm xuất bản', 'total_quantity' => 'Tổng số lượng'] as $field => $label)
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" for="{{ $field }}">{{ $label }}</label>
-                    <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}" type="{{ in_array($field, ['publication_year', 'total_quantity']) ? 'number' : 'text' }}" value="{{ old($field, $book->$field) }}" {{ in_array($field, ['book_code', 'title', 'total_quantity']) ? 'required' : '' }}>
-                </div>
-            @endforeach
-            <div class="col-md-6 mb-3">
-                <label class="form-label" for="author_id">Tác giả</label>
-                <select class="form-select" id="author_id" name="author_id" required>
-                    <option value="">Chọn tác giả</option>
-                    @foreach($authors as $author)<option value="{{ $author->id }}" @selected(old('author_id', $book->author_id) == $author->id)>{{ $author->name }}</option>@endforeach
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label" for="category_id">Thể loại</label>
-                <select class="form-select" id="category_id" name="category_id" required>
-                    <option value="">Chọn thể loại</option>
-                    @foreach($categories as $category)<option value="{{ $category->id }}" @selected(old('category_id', $book->category_id) == $category->id)>{{ $category->name }}</option>@endforeach
-                </select>
-            </div>
-            <div class="col-md-8 mb-3">
-                <label class="form-label" for="cover_image">Ảnh bìa</label>
-                <input class="form-control @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
-                <div class="form-text">JPG, PNG hoặc WEBP; tối đa 2 MB.</div>
-            </div>
-            <div class="col-md-4 mb-3 text-center">
-                <img id="cover-preview" src="{{ $book->cover_url }}" class="form-cover-preview" alt="Xem trước ảnh bìa">
-            </div>
-            <div class="col-12 mb-3">
-                <label class="form-label" for="description">Mô tả</label>
-                <textarea class="form-control" id="description" name="description" rows="4">{{ old('description', $book->description) }}</textarea>
-            </div>
-        </div>
-        <button class="btn btn-primary">Lưu</button>
-        <a class="btn btn-outline-secondary" href="{{ route('books.admin.index') }}">Hủy</a>
-    </form>
-</div>
-<script>
-document.getElementById('cover_image').addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) document.getElementById('cover-preview').src = URL.createObjectURL(file);
-});
-</script>
+<div class="saysach-form-page"><div class="d-flex align-items-center justify-content-between gap-2 mb-3"><h2 class="mb-0">{{ $book->exists ? 'Chỉnh sửa sách' : 'Thêm sách mới' }}</h2><a class="btn btn-outline-secondary" href="{{ route('books.admin.index') }}">Quay lại</a></div>
+<form class="card p-4" enctype="multipart/form-data" method="POST" action="{{ $book->exists ? route('books.update',$book) : route('books.store') }}">@csrf @if($book->exists) @method('PUT') @endif
+<div class="row g-3"><div class="col-md-6"><label class="form-label" for="book_code">Mã sách *</label><input id="book_code" class="form-control" name="book_code" value="{{ old('book_code',$book->book_code) }}" required maxlength="30"></div><div class="col-md-6"><label class="form-label" for="title">Tên sách *</label><input id="title" class="form-control" name="title" value="{{ old('title',$book->title) }}" required></div>
+<div class="col-md-6"><label class="form-label" for="publisher">Nhà xuất bản</label><input id="publisher" class="form-control" name="publisher" value="{{ old('publisher',$book->publisher) }}"></div><div class="col-md-6"><label class="form-label" for="publication_year">Năm xuất bản</label><input id="publication_year" class="form-control" type="number" min="1900" max="{{ date('Y') }}" name="publication_year" value="{{ old('publication_year',$book->publication_year) }}"></div>
+<div class="col-md-6"><label class="form-label" for="cover_price">Giá bìa (VNĐ) *</label><input id="cover_price" class="form-control" type="number" min="1" name="cover_price" value="{{ old('cover_price',$book->cover_price) }}" required></div><div class="col-md-6"><label class="form-label" for="author_id">Tác giả *</label><select id="author_id" class="form-select" name="author_id" required><option value="">Chọn tác giả</option>@foreach($authors as $a)<option value="{{ $a->id }}" @selected(old('author_id',$book->author_id)==$a->id)>{{ $a->name }}</option>@endforeach</select></div>
+<div class="col-md-6"><label class="form-label" for="category_id">Thể loại *</label><select id="category_id" class="form-select" name="category_id" required><option value="">Chọn thể loại</option>@foreach($categories as $c)<option value="{{ $c->id }}" @selected(old('category_id',$book->category_id)==$c->id)>{{ $c->name }}</option>@endforeach</select></div><div class="col-md-6"><label class="form-label" for="is_active">Trạng thái hiển thị</label><select id="is_active" class="form-select" name="is_active"><option value="1" @selected(old('is_active',$book->exists ? (int)$book->is_active : 1)==1)>Hiển thị</option><option value="0" @selected(old('is_active',$book->exists ? (int)$book->is_active : 1)==0)>Ẩn sách</option></select></div>
+<div class="col-md-8"><label class="form-label" for="cover_image">Ảnh bìa</label><input id="cover_image" type="file" accept="image/jpeg,image/png,image/webp" name="cover_image" class="form-control"><div class="form-text">JPG, PNG hoặc WebP; tối đa 2 MB.</div></div><div class="col-md-4"><div class="book-cover-preview">@include('books.cover', ['coverClass' => 'admin-book-cover'])</div></div>
+<div class="col-12"><label class="form-label" for="description">Mô tả</label><textarea id="description" class="form-control" rows="4" name="description">{{ old('description',$book->description) }}</textarea></div></div>
+<div class="d-flex gap-2 mt-4"><button class="btn btn-primary" type="submit">{{ $book->exists ? 'Lưu thay đổi' : 'Thêm sách' }}</button><a class="btn btn-outline-secondary" href="{{ route('books.admin.index') }}">Hủy</a></div></form></div>
 @endsection

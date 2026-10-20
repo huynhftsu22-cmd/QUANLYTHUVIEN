@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('user_code', 20)->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone', 20)->nullable();
+            $table->string('phone', 20)->unique();
             $table->string('address')->nullable();
             $table->string('password');
             $table->enum('role', ['user', 'admin'])->default('user')->index();

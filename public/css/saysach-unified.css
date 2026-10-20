@@ -1,0 +1,129 @@
+/* Say Sách — shared design system for public, reader and administration views. */
+:root{--ss-green:#204938;--ss-deep:#143b2d;--ss-gold:#e7c48e;--ss-paper:#faf8f3;--ss-line:#e8e5dd;--ss-muted:#62746c;--ss-radius:13px;--bs-primary:#204938;--bs-primary-rgb:32,73,56;--bs-success:#287653;--bs-success-rgb:40,118,83;--bs-link-color:#204938;--bs-link-hover-color:#143b2d}
+html{scroll-behavior:smooth}body{background:var(--ss-paper);color:#20382e}a{color:var(--ss-green)}a:hover{color:var(--ss-deep)}main{min-width:0;min-height:calc(100vh - 85px)}main>.row,main>.container{max-width:100%}
+main h1:not(.saysach-hero h1),main h2,main h3{color:var(--ss-deep);letter-spacing:-.02em}main h1.h3,main h1.h4{font-family:'Playfair Display',Georgia,serif;font-weight:700}main>.d-flex:first-child,main>div>.d-flex:first-child{gap:1rem}
+.saysach-nav{box-shadow:0 2px 10px rgba(18,48,35,.08)}.saysach-nav .nav-link{border-bottom:2px solid transparent;transition:border-color .2s}.saysach-nav .nav-link:hover,.saysach-nav .nav-link:focus{border-color:var(--ss-gold)}.saysach-nav .btn-outline-light{border-color:#ffffff85;color:#fff}.saysach-nav .btn-outline-light:hover{color:var(--ss-deep)}
+.sidebar{border-color:var(--ss-line)!important;box-shadow:2px 0 16px rgba(22,49,35,.025)}.sidebar .nav-link{padding:.72rem .85rem;font-weight:500;transition:background .15s}.sidebar .nav-link.active,.sidebar .nav-link[aria-current="page"]{background:#e6ede5;color:var(--ss-deep);font-weight:700}.sidebar small{letter-spacing:.12em;font-size:.7rem;font-weight:700}.sidebar hr{border-color:var(--ss-line)}
+.card{border:1px solid var(--ss-line);border-radius:var(--ss-radius);box-shadow:0 5px 18px rgba(22,45,32,.045);overflow:hidden}.card-header,.card-footer{background:#fcfbf8;border-color:var(--ss-line);padding:1rem 1.25rem}.card-body{padding:1.25rem}.card.p-3,.card.p-4{overflow:visible}
+.btn{border-radius:9px;font-weight:600;padding:.55rem 1rem;transition:background .15s,border-color .15s,transform .15s}.btn:hover{transform:translateY(-1px)}.btn-sm{padding:.35rem .65rem;border-radius:7px;font-size:.81rem}.btn-primary,.btn-success,.btn-dark{background:var(--ss-green)!important;border-color:var(--ss-green)!important;color:white!important}.btn-primary:hover,.btn-success:hover,.btn-dark:hover{background:var(--ss-deep)!important;border-color:var(--ss-deep)!important}.btn-outline-primary,.btn-outline-success{border-color:var(--ss-green)!important;color:var(--ss-green)!important}.btn-outline-primary:hover,.btn-outline-success:hover{background:var(--ss-green)!important;color:white!important}.btn-outline-secondary{border-color:#bfc9c0;color:#425b4d}.btn-outline-secondary:hover{background:#e8eee7;border-color:#8da596;color:var(--ss-deep)}.btn-warning{background:var(--ss-gold);border-color:var(--ss-gold);color:var(--ss-deep)}.btn-danger,.btn-outline-danger{--bs-btn-border-radius:9px}
+.form-control,.form-select,.input-group-text{border:1px solid #d8dfd7;border-radius:9px;background-color:#fff;min-height:42px;color:#243c30}.form-label{font-weight:600;color:#314d3f;font-size:.88rem;margin-bottom:.4rem}.form-text,.text-muted{color:var(--ss-muted)!important}.form-check-input:checked{background-color:var(--ss-green);border-color:var(--ss-green)}.form-control:focus,.form-select:focus{border-color:#89ab95;box-shadow:0 0 0 .2rem #20493819}
+.table-responsive{border-radius:var(--ss-radius);overflow-x:auto}.table{--bs-table-bg:transparent;--bs-table-hover-bg:#f3f6f1;margin-bottom:0}.table>:not(caption)>*>*{padding:.85rem .9rem;border-bottom-color:#eceee8}.table thead th,.table-light th{background:#edf2eb!important;color:#284536;font-size:.78rem;letter-spacing:.02em;text-transform:uppercase;font-weight:700;white-space:nowrap}.table tbody tr:last-child td{border-bottom:0}.table td{color:#30473b}.table .btn{white-space:nowrap}.badge{font-weight:600;letter-spacing:.01em;padding:.42em .65em;border-radius:7px}.text-bg-success,.bg-success{background-color:#2e7958!important}.text-bg-primary,.bg-primary{background-color:var(--ss-green)!important}.text-bg-warning{color:#674919!important;background-color:#f3dfb7!important}
+.alert{border-radius:10px;border-width:1px}.alert-success{background:#edf7ef;border-color:#c8dfce;color:#23533a}.alert-danger{background:#fff0ee;border-color:#efc7c2;color:#82382e}.alert-info{background:#edf5f3;border-color:#c9ded8;color:#255348}
+.pagination{gap:5px;flex-wrap:wrap}.page-link{border:1px solid #dfe6dc;color:var(--ss-green);border-radius:8px!important;padding:.5rem .8rem}.page-item.active .page-link{background:var(--ss-green);border-color:var(--ss-green)}.page-link:hover{background:#edf2ea;color:var(--ss-deep)}
+/* Public catalog cards retain a consistent, readable book-cover / details split. */
+.catalog-card{align-items:flex-start;min-height:205px}.catalog-info{gap:2px}.catalog-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:2.6em}.catalog-author{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.catalog-category{margin-top:6px}.catalog-action{margin-top:auto}.catalog-cover{flex-shrink:0}.admin-book-cover{width:44px;height:66px;object-fit:cover;border-radius:5px}
+/* Authentication is styled as a distinct but cohesive page, no new business logic. */
+.saysach-auth main{display:flex;justify-content:center;align-items:flex-start;padding-top:clamp(2rem,6vh,5rem)!important}.saysach-auth main>.row{width:100%;margin-inline:auto}.saysach-auth main .card{padding:clamp(1.4rem,3vw,2.5rem)!important;box-shadow:0 15px 45px rgba(20,59,45,.09)}.saysach-auth main h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.8rem!important}.saysach-auth main .btn[type="submit"]{min-height:45px}
+/* Responsive tables and filters on phones. */
+@media(max-width:991.98px){.sidebar{min-height:auto!important;border-right:0!important;border-bottom:1px solid var(--ss-line);padding:1rem!important}.sidebar nav{display:flex;flex-direction:row!important;flex-wrap:wrap;gap:.25rem!important}.sidebar nav hr,.sidebar nav small{display:none}.sidebar .nav-link{font-size:.85rem;padding:.55rem .75rem}main{padding:1.2rem!important}.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:575.98px){.saysach-logo{font-size:1.65rem}.catalog-grid{grid-template-columns:1fr}.catalog-card{min-height:170px}.table>:not(caption)>*>*{padding:.65rem .7rem}main .d-flex.justify-content-between{flex-wrap:wrap}main h1.h3{font-size:1.55rem}}
+
+/* Compact buttons based on the original project: fit content, never stretch unintentionally. */
+.btn:not(.navbar-toggler){width:auto;max-width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;vertical-align:middle;white-space:nowrap;line-height:1.4;padding:.42rem .85rem;font-size:.9rem;border-radius:7px;min-height:36px}
+.btn.btn-sm{padding:.28rem .58rem;font-size:.8rem;min-height:30px;border-radius:6px}
+.btn.btn-lg{padding:.55rem 1.05rem;font-size:1rem;min-height:43px}
+.btn.w-100:not(.catalog-search-button){width:auto!important}
+.d-grid>.btn{justify-self:start}
+.input-group>.btn{border-radius:0 7px 7px 0}
+.btn-group>.btn{border-radius:0}
+.btn-group>.btn:first-child{border-radius:7px 0 0 7px}
+.btn-group>.btn:last-child{border-radius:0 7px 7px 0}
+.saysach-hero .btn{padding:.65rem 1.25rem;font-size:.95rem}
+.catalog-card .btn,.catalog-action .btn{padding:.32rem .68rem;font-size:.81rem;min-height:32px}
+.saysach-auth main .btn[type="submit"]{min-height:38px}
+@media(max-width:575.98px){.btn:not(.navbar-toggler){white-space:normal}.catalog-card .btn{font-size:.8rem}}
+
+/* Refined book management and dedicated forms */
+.saysach-form-page{max-width:1040px;margin-inline:auto}.saysach-form-page .card{overflow:visible}.saysach-form-page .book-cover-preview{display:flex;justify-content:flex-start;align-items:center;min-height:112px}.book-cover-preview img{width:78px;height:112px;object-fit:cover;border-radius:7px;border:1px solid #e2e6df}.admin-book-cover{width:46px;height:65px;object-fit:cover;border-radius:5px}.table td .btn{width:auto!important}.catalog-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.catalog-card{min-height:235px;gap:13px}.catalog-cover{width:112px;min-width:112px;height:168px}.catalog-info{min-height:175px}.catalog-title{font-size:.98rem}.catalog-action{padding:.45rem .65rem;align-self:flex-start;min-width:106px}.catalog-category{max-width:100%}@media(max-width:1450px){.catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:1050px){.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.catalog-grid{grid-template-columns:1fr}.catalog-cover{width:108px;min-width:108px;height:160px}}
+
+/* Typography system: same author-management heading across every page. */
+:root{--ss-heading-font:Georgia,'Times New Roman',serif;--ss-body-font:Arial,'Segoe UI',sans-serif}
+body,button,input,select,textarea,.table,.form-control,.form-select{font-family:var(--ss-body-font)!important}
+main h1,main h2,main h3,main h4,main .h1,main .h2,main .h3,main .h4,.catalog-heading,.saysach-auth main h1{font-family:var(--ss-heading-font)!important;color:var(--ss-deep);font-weight:700;letter-spacing:-.025em;line-height:1.2}
+main h1,.catalog-heading{font-size:clamp(1.65rem,2.3vw,2.05rem)}
+.saysach-hero h1{font-family:var(--ss-heading-font)!important;font-size:clamp(2rem,4vw,3.5rem)}
+.saysach-logo{font-family:var(--ss-heading-font)!important}
+main p,main td,main .form-label,main .form-text{line-height:1.55}
+
+/* Homepage refresh based on supplied Say Sách reference. */
+.saysach-hero{position:relative;isolation:isolate;min-height:252px;padding:2.5rem 4.25rem;background:#e9d9bc;border-radius:13px}
+.saysach-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:url('/images/saysach-banner.png') center right/cover no-repeat}
+.saysach-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#f7edda 0%,rgba(247,237,218,.97) 24%,rgba(247,237,218,.83) 39%,rgba(247,237,218,.12) 67%,transparent 100%)}
+.saysach-hero-content{position:relative;z-index:1}
+.saysach-hero h1{font-family:Georgia,'Times New Roman',serif!important;font-kerning:normal;letter-spacing:0!important;word-spacing:normal!important;font-size:clamp(2.25rem,3.65vw,3.65rem)!important;line-height:1.12!important;max-width:660px;margin:0;color:#143b2d}
+.catalog-heading{letter-spacing:0!important}
+.catalog-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.catalog-card{min-height:185px;gap:13px;padding:12px;align-items:stretch;border-radius:9px}
+.catalog-cover{width:104px;min-width:104px;height:155px;object-fit:cover;align-self:flex-start}
+.catalog-info{min-height:155px;gap:2px}
+.catalog-title{font-family:Arial,'Segoe UI',sans-serif;font-size:.89rem;min-height:0;line-height:1.28;margin:2px 0 4px}
+.catalog-author{font-size:.77rem;min-height:0}
+.catalog-code{font-size:.7rem}.catalog-category{font-size:.69rem;margin-top:5px}.catalog-available{font-size:.75rem;margin-top:5px}
+.catalog-action{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;min-width:0;padding:6px 12px;font-size:.77rem}
+.catalog-action::before{content:'▣';font-size:.8rem;margin-right:6px}
+@media(max-width:1450px){.catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1050px){.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.saysach-hero{padding:2rem 2.4rem}}
+@media(max-width:620px){.catalog-grid{grid-template-columns:1fr}.saysach-hero{min-height:240px;padding:1.7rem}.saysach-hero::after{background:linear-gradient(90deg,rgba(247,237,218,.96),rgba(247,237,218,.72) 70%,rgba(247,237,218,.25))}.saysach-hero h1{font-size:2.05rem!important}.catalog-cover{width:105px;min-width:105px;height:157px}}
+
+/* Final shared sizing rules. Every cover gets a fixed frame without cropping its text. */
+:root{--ss-heading-font:Georgia,'Times New Roman',serif;--ss-body-font:Arial,'Segoe UI',sans-serif}
+body{font-size:14px;line-height:1.55}
+main h1,main h2,main h1.h3,main h1.h4,main h2.h3,main h2.h4,main .page-title,main .catalog-heading{font-family:var(--ss-heading-font)!important;font-size:30px!important;font-weight:700!important;line-height:1.25!important;letter-spacing:0!important}
+main h3,main h4{font-family:var(--ss-heading-font)!important;font-size:22px!important;line-height:1.3!important;letter-spacing:0!important}
+.saysach-hero h1{font-size:clamp(30px,3.4vw,52px)!important;line-height:1.12!important}
+.hero-subtitle{font-size:15px;line-height:1.5;margin:12px 0 0;max-width:470px}
+.saysach-hero{padding:30px 36px;min-height:270px}
+.saysach-hero::before{background-image:var(--ss-banner-image);background-position:right center}
+.saysach-hero{background-image:none}
+.catalog-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+.catalog-card{height:214px;min-height:214px;padding:12px;gap:12px;overflow:hidden}
+.catalog-cover{display:block;flex:0 0 112px;width:112px!important;min-width:112px!important;max-width:112px;height:188px!important;object-fit:contain;background:#f4f2ec;border-radius:4px;box-shadow:none;align-self:center}
+.catalog-info{height:188px;min-height:0;overflow:hidden;gap:3px}
+.catalog-title{font-family:var(--ss-body-font)!important;font-size:14px!important;line-height:1.35!important;height:38px;min-height:38px;margin:1px 0 0;flex-shrink:0}
+.catalog-author{font-size:12px;line-height:1.4;height:34px;flex-shrink:0}
+.catalog-code{font-size:11px}.catalog-category{font-size:11px;line-height:1.4;margin:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.catalog-available{font-size:12px;line-height:1.4;margin-top:3px;white-space:nowrap}
+.catalog-action{font-size:12px;line-height:1.4;margin-top:auto;white-space:nowrap;padding:6px 10px;flex-shrink:0}
+.catalog-action::before{content:none}
+.admin-book-cover{display:block;width:48px!important;height:72px!important;object-fit:contain;background:#f4f2ec}
+.detail-cover{display:block;width:100%;max-width:240px;height:360px;aspect-ratio:auto;object-fit:contain;background:#f4f2ec;margin-inline:auto}
+.book-cover-preview img{object-fit:contain}
+.detail-back-link{display:inline-block;color:var(--ss-green);text-decoration:none;margin-bottom:12px}
+.book-detail p{margin-bottom:12px}.book-detail .book-detail-title{font-size:26px!important}
+.table thead th,.table-light th{font-size:13px;letter-spacing:0;text-transform:none}.table td{font-size:14px}
+.btn.w-100:not(.navbar-toggler){width:100%!important}.d-grid>.btn{justify-self:stretch}
+.sidebar .nav-link.active{background:#f7e9d0}
+@media(max-width:1550px){.catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1150px){.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.catalog-grid{grid-template-columns:1fr}.saysach-hero{padding:24px}.catalog-card{height:214px}.detail-cover{height:300px}main h1,main h2,main h1.h3,main h1.h4,main h2.h3,main h2.h4{font-size:26px!important}}
+
+/* Crop only the whitespace supplied by retailers, using CSS: original files are retained. */
+.book-cover-frame{position:relative;overflow:hidden;padding:0;box-sizing:border-box;background:#f4f2ec}
+.book-cover-frame img{position:absolute;display:block;width:100%;height:100%;max-width:none;inset:0;object-fit:fill}
+.book-cover-frame:not(.edition-cover) img{object-fit:contain}
+.catalog-cover.book-cover-frame{height:188px!important;width:112px!important;min-width:112px!important;flex-basis:112px}
+.detail-cover.book-cover-frame{height:360px;width:240px;max-width:100%}
+.admin-book-cover.book-cover-frame{width:48px!important;height:72px!important}
+.edition-S0009 img{width:147.4201%;height:103.4483%;left:-23.5872%;top:-1.7241%;right:auto;bottom:auto}
+.edition-S0002 img{width:158.3113%;height:103.4483%;left:-29.0237%;top:-1.7241%;right:auto;bottom:auto}
+.edition-S0001 img{width:137.2998%;height:103.6269%;left:-18.5355%;top:-2.0725%;right:auto;bottom:auto}
+.edition-S0013 img{width:146.3415%;height:103.0928%;left:-23.1707%;top:-1.5464%;right:auto;bottom:auto}
+.edition-S0016 img{width:157.0681%;height:103.6269%;left:-28.5340%;top:-1.8998%;right:auto;bottom:auto}
+
+@media(min-width:1400px){.catalog-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Vietnamese headings use an embedded complete glyph set, with no fallback accent spacing. */
+:root{--ss-heading-font:'Noto Serif',Georgia,serif}
+.saysach-logo,main h1,main h2,main h3,main h4,.catalog-heading,.saysach-hero h1,.saysach-auth main h1{font-family:var(--ss-heading-font)!important;font-kerning:normal;letter-spacing:normal!important;word-spacing:normal!important;font-feature-settings:normal;font-variant-ligatures:normal}
+.book-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.rental-breakdown{max-width:640px;margin-top:16px;border:1px solid #e2e5df;border-radius:8px;padding:12px 16px;background:#fff}
+.rental-breakdown dl{margin:0}.rental-breakdown dl>div{display:flex;justify-content:space-between;gap:18px;padding:6px 0}.rental-breakdown dd{margin:0;white-space:nowrap;font-variant-numeric:tabular-nums}.rental-breakdown dt{font-weight:400}.rental-breakdown .quote-total{border-top:1px solid #dce2d9;margin-top:6px;padding-top:10px;font-weight:700}.rental-breakdown .quote-total dt{font-weight:700}
+.deposit-explanation{font-size:13px;color:#52665c;max-width:680px;margin-top:12px;line-height:1.6}
+#quote-error{color:#9b3029;margin-top:8px}.membership-summary{max-width:850px}
+
+/* Consistent section headings, including dashboard panels. */
+main h5,main h6{font-family:var(--ss-heading-font)!important;font-weight:700;color:var(--ss-deep);letter-spacing:normal;line-height:1.5}
+.statistics-section-title{font-family:var(--ss-heading-font)!important;font-size:20px!important;font-weight:700;margin-bottom:16px;line-height:1.5}
+.statistics-note{font-size:13px;color:var(--ss-muted);line-height:1.6}
+.statistics-number{font-variant-numeric:tabular-nums;font-family:Arial,sans-serif!important}
+.copy-barcode svg{max-width:100%;height:34px}.copy-table{min-width:850px}.copy-table th:nth-child(1){width:23%}.copy-table th:nth-child(2){width:21%}

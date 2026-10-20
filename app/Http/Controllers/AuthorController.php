@@ -21,7 +21,7 @@ class AuthorController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        Author::create($request->validate(['name' => ['required', 'max:255'], 'biography' => ['nullable', 'string']]));
+        Author::create($request->validate(['name' => ['required', 'max:255'], 'biography' => ['nullable', 'string']], [], ['name' => 'Tên tác giả', 'biography' => 'Tiểu sử']));
 
         return redirect()->route('authors.index')->with('success', 'Đã thêm tác giả.');
     }
@@ -33,7 +33,7 @@ class AuthorController extends Controller
 
     public function update(Request $request, Author $author): RedirectResponse
     {
-        $author->update($request->validate(['name' => ['required', 'max:255'], 'biography' => ['nullable', 'string']]));
+        $author->update($request->validate(['name' => ['required', 'max:255'], 'biography' => ['nullable', 'string']], [], ['name' => 'Tên tác giả', 'biography' => 'Tiểu sử']));
 
         return redirect()->route('authors.index')->with('success', 'Đã cập nhật tác giả.');
     }

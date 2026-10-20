@@ -1,0 +1,48 @@
+/* Say Sách navigation: shared by administrators and readers. */
+.saysach-shell{align-items:flex-start}
+.ss-sidebar.sidebar{--ss-nav-green:#214e3b;--ss-nav-muted:#6b796f;flex:0 0 260px;width:260px;max-width:260px;position:sticky;top:0;min-height:100vh;height:100dvh;padding:24px 16px 16px;background:#fffefa!important;border-right:1px solid #e4e8df;box-shadow:none;display:flex;flex-direction:column}
+.saysach-main{flex:1 1 0;width:0;min-width:0}
+.ss-sidebar-heading{display:flex;align-items:center;gap:11px;padding:0 10px 22px;border-bottom:1px solid #e8ece4;flex-shrink:0}
+.ss-sidebar-emblem{display:grid;place-items:center;width:42px;height:46px;border-radius:13px;background:#214e3b;color:#f5dfb8;flex-shrink:0}
+.ss-sidebar-emblem svg{width:25px;height:25px}
+.ss-sidebar-heading strong{display:block;font-family:'Noto Serif',Georgia,serif;font-size:19px;line-height:1.6;color:#214e3b}
+.ss-sidebar-heading span:not(.ss-sidebar-emblem){display:block;font-size:12px;line-height:1.6;color:#6b796f}
+.ss-sidebar-body{flex:1;min-height:0;flex-direction:column}
+.ss-sidebar-nav{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#d3dfd2 transparent;padding:6px 0 20px;flex:1;min-height:0}
+.ss-nav-group{margin-top:19px}
+.ss-nav-group .ss-nav-label{margin:0 0 8px;padding:0 13px;font-family:Arial,sans-serif;font-size:10px!important;font-weight:700;line-height:1.7;letter-spacing:1.2px;text-transform:uppercase;color:#7c887d}
+.ss-nav-link{position:relative;display:flex;align-items:center;gap:11px;min-height:44px;margin:3px 0;padding:10px 12px;border:1px solid transparent;border-radius:10px;color:#526256;font-family:Arial,sans-serif;font-size:13px;font-weight:500;line-height:1.5;text-decoration:none;transition:background .16s,color .16s,border-color .16s}
+.ss-nav-icon{display:flex;flex:0 0 20px;color:#7a8d7d}
+.ss-nav-icon svg{width:20px;height:20px}
+.ss-nav-link:hover{background:#f0f4ec;color:#214e3b}
+.ss-nav-link:focus-visible,.ss-menu-toggle:focus-visible{outline:3px solid #b68a43;outline-offset:2px}
+.ss-nav-link.is-active{background:#214e3b;border-color:#214e3b;color:#fff;font-weight:700;box-shadow:0 4px 10px #214e3b16}
+.ss-nav-link.is-active .ss-nav-icon{color:#eed7ac}
+.ss-active-dot{display:none;margin-left:auto;flex:0 0 5px;width:5px;height:5px;border-radius:50%;background:#edcf96}
+.ss-nav-link.is-active .ss-active-dot{display:block}
+.ss-sidebar-account{display:flex;align-items:center;gap:10px;padding:15px 10px 0;border-top:1px solid #e8ece4;flex-shrink:0}
+.ss-account-avatar{display:grid;place-items:center;width:36px;height:36px;border:1px solid #dfd6bf;border-radius:50%;background:#f5ecd9;color:#655135;font-size:14px;font-weight:700;flex-shrink:0}
+.ss-sidebar-account>div{min-width:0}
+.ss-sidebar-account strong{display:block;font:700 13px/1.6 Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#304e39}
+.ss-sidebar-account div span{display:block;color:#7a857b;font:400 11px/1.7 Arial,sans-serif}
+.ss-menu-toggle{display:none}
+@media(min-width:992px){.ss-sidebar-body.collapse{display:flex!important}}
+@media(max-width:991.98px){
+ .ss-sidebar.sidebar{position:static;flex:0 0 100%;width:100%;max-width:100%;height:auto;min-height:0!important;padding:12px 16px!important;border-right:0;border-bottom:1px solid #e4e8df}
+ .ss-sidebar-heading{padding:0;border-bottom:0;gap:10px}
+ .ss-sidebar-emblem{width:34px;height:38px;border-radius:10px}.ss-sidebar-emblem svg{width:22px;height:22px}
+ .ss-sidebar-heading strong{font-size:16px}.ss-sidebar-heading span:not(.ss-sidebar-emblem){font-size:11px}
+ .ss-menu-toggle{margin-left:auto;display:flex;align-items:center;gap:7px;background:#f0f4ec;border:1px solid #dce4d8;border-radius:9px;padding:8px 12px;color:#214e3b;font:700 12px Arial,sans-serif}
+ .ss-menu-toggle svg{width:18px;height:18px}.ss-menu-toggle[aria-expanded="true"]{background:#e2eadc}
+ .ss-sidebar-body.show{display:flex}.ss-sidebar-nav{display:block!important;padding:0 0 14px;max-height:65dvh;overflow-y:auto}
+ .ss-sidebar-nav .ss-nav-label{display:block!important}.ss-nav-group{margin-top:16px}.ss-nav-link{font-size:13px}
+ .ss-sidebar-account{padding:12px 4px 0}.saysach-main{flex:0 0 100%;width:100%}
+}
+@media(prefers-reduced-motion:reduce){.ss-nav-link{transition:none}}
+
+.saysach-logo{display:inline-flex;align-items:center;gap:12px}
+.saysach-brand-icon{display:grid;place-items:center;width:42px;height:42px;border:1px solid #f5dfb84d;border-radius:12px;background:#ffffff0d;color:#f5dfb8;flex-shrink:0}
+.saysach-brand-icon svg{width:28px;height:28px}
+.membership-register{max-width:900px}.membership-register .membership-price{font-size:1.4rem;font-weight:700;color:#214e3b}
+.membership-request-actions{min-width:240px;max-width:340px}.membership-request-actions label{font-size:.85rem}
+@media(max-width:575.98px){.saysach-logo{gap:9px}.saysach-brand-icon{width:35px;height:35px;border-radius:10px}.saysach-brand-icon svg{width:24px;height:24px}}

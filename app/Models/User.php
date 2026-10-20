@@ -44,6 +44,23 @@ class User extends Authenticatable
         ];
     }
 
+    public function membershipCards(): HasMany { return $this->hasMany(MembershipCard::class); }
+    public function studentVerifications(): HasMany { return $this->hasMany(StudentVerification::class); }
+    public function payments(): HasMany { return $this->hasMany(Payment::class); }
+
+    /**
+     * Thẻ hợp lệ cho một phiếu (BR-14): status = active và expires_at >= $dueDate
+     * (thẻ phải phủ hết thời gian mượn). Trả MembershipCard hoặc null.
+     */
+    public function validCardFor(\DateTimeInterface|string $dueDate): ?MembershipCard
+    {
+        return $this->membershipCards()
+            ->where('status', 'active')
+            ->whereDate('expires_at', '>=', $dueDate)
+            ->orderByDesc('expires_at')
+            ->first();
+    }
+
     public function borrowRecords(): HasMany
     {
         return $this->hasMany(BorrowRecord::class);
@@ -57,6 +74,19 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /**
+     * Chuẩn hóa SĐT về dạng 0xxxxxxxxx để chặn trùng số dù nhập +84901234567 hay 0901234567.
+     * Chuỗi không đúng định dạng được giữ nguyên để validate báo lỗi như bình thường.
+     */
+    public static function normalizePhone(?string $phone): ?string
+    {
+        if ($phone === null) {
+            return null;
+        }
+
+        return preg_match('/^\+84([35789][0-9]{8})$/', $phone, $m) ? '0'.$m[1] : $phone;
     }
 
     public static function nextCode(string $role): string

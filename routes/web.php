@@ -1,14 +1,10 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-
-Route::redirect('/', '/books')->name('home');
-
-require __DIR__.'/auth.php';
-require __DIR__.'/books.php';
-require __DIR__.'/authors.php';
-require __DIR__.'/categories.php';
-require __DIR__.'/users.php';
-require __DIR__.'/borrow.php';
-require __DIR__.'/history.php';
-require __DIR__.'/statistics.php';
+Route::get('/', function () {
+    if (!auth()->check()) return redirect()->route('login');
+    return auth()->user()->role === 'admin' ? redirect()->route('statistics.index') : redirect()->route('books.index');
+})->name('home');
+foreach (['auth','cards','books','copies','history','authors','categories','users','verifications','statistics','borrow','returns','payments'] as $module) {
+    $file=__DIR__.'/'.$module.'.php';
+    if (file_exists($file)) require $file;
+}

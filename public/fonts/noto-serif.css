@@ -1,0 +1,17 @@
+/* Noto Serif: SIL Open Font License 1.1 */
+@font-face {
+  font-family: 'Noto Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(noto-serif-400.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(noto-serif-700.ttf) format('truetype');
+}
