@@ -122,7 +122,7 @@ Nếu `npm.cmd ci` không tương thích với file lock hiện có, kiểm tra 
 
 ### Bước 3. Tạo cơ sở dữ liệu
 
-Dùng HeidiSQL hoặc phpMyAdmin tạo một database **trống**, ví dụ `qlthuvien`. Không chạy lệnh xóa dữ liệu trên database đang có thông tin cần giữ.
+Dùng HeidiSQL hoặc phpMyAdmin tạo một database **trống**, ví dụ `qlthuvien_saysach`. Không chạy lệnh xóa dữ liệu trên database đang có thông tin cần giữ.
 
 ### Bước 4. Tạo file môi trường
 
@@ -141,7 +141,7 @@ APP_URL=http://localhost:8000
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=qlthuvien
+DB_DATABASE=qlthuvien_saysach
 DB_USERNAME=root
 DB_PASSWORD=
 ```
