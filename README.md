@@ -26,7 +26,7 @@ Dự án được tổ chức theo mô hình ứng dụng web Laravel, không s�
 
 ### 2.2. Độc giả
 
-- Đăng ký tài khoản với họ tên, email, **số điện thoại bắt buộc** và địa chỉ theo danh sách phường được hỗ trợ; hệ thống kiểm tra dữ liệu không hợp lệ hoặc trùng lặp.
+- Đăng ký tài khoản với họ tên, email, số điện thoại bắt buộc và địa chỉ theo danh sách phường được hỗ trợ; hệ thống kiểm tra dữ liệu không hợp lệ hoặc trùng lặp.
 - Đăng nhập, đăng xuất; tài khoản bị khóa hoặc vô hiệu hóa không được tiếp tục sử dụng các chức năng được bảo vệ.
 - Xem chi tiết sách, chọn số ngày thuê hợp lệ và nhận báo giá từ máy chủ: tiền thuê, ưu đãi, tiền cọc và thời hạn dự kiến.
 - Đặt giữ bản sao sách còn sẵn; không cho đặt trùng cùng đầu sách nếu còn phiếu chờ nhận, đang mượn hoặc quá hạn.
@@ -77,7 +77,7 @@ Seeder khởi tạo một chính sách thuê tại bảng `rental_policies` vớ
 
 ### Bước 1. Chuẩn bị môi trường
 
-Cài đặt Laragon (có PHP phù hợp), Composer và MySQL. Khởi động dịch vụ cần thiết trong Laragon. Đặt mã nguồn vào thư mục, ví dụ:
+Cài đặt Laragon (có PHP phù hợp), Composer, MySQL và Node.js/npm (Node.js có thể có sẵn trong Laragon). Khởi động dịch vụ cần thiết trong Laragon. Đặt mã nguồn vào thư mục, ví dụ:
 
 ```text
 C:\laragon\www\QUANLYTHUVIEN
@@ -90,9 +90,35 @@ Nếu đã clone GitHub với tên `QUANLYTHUVIEN_GITHUB`, có thể sử dụng
 Trong PowerShell:
 
 ```powershell
-cd C:\laragon\www\QUANLYTHUVIEN
+cd C:\laragon\www\QUANLYTHUVIEN_GITHUB
 composer install
 ```
+
+### Bước 2a. Cài đặt và build tài nguyên giao diện
+
+Kiểm tra Node.js và npm trong PowerShell:
+
+```powershell
+node -v
+npm.cmd -v
+```
+
+Nếu không nhận lệnh nhưng Laragon đã cài Node.js, thêm **đúng đường dẫn thư mục chứa `node.exe` trên máy** vào `PATH` của Terminal hiện tại. Ví dụ, chỉ dùng khi máy có thư mục tương ứng:
+
+```powershell
+$nodeDir = "C:\laragon\bin\nodejs\node-v22"
+$env:Path = "$nodeDir;$env:Path"
+```
+
+Tại thư mục dự án, chạy:
+
+```powershell
+npm.cmd ci
+npm.cmd run build
+Test-Path .\public\build\manifest.json
+```
+
+Nếu `npm.cmd ci` không tương thích với file lock hiện có, kiểm tra lỗi rồi mới cân nhắc `npm.cmd install`. Kết quả `Test-Path` mong đợi là `True`. **Không chạy `npm audit fix --force` chỉ để khắc phục lỗi giao diện.** Các tệp Bootstrap bắt buộc `public/vendor/bootstrap/bootstrap.min.css` và `bootstrap.bundle.min.js` đã được lưu trong mã nguồn GitHub.
 
 ### Bước 3. Tạo cơ sở dữ liệu
 
@@ -143,6 +169,44 @@ Lệnh tạo các bảng mới và nạp tài khoản mẫu, danh mục sách v�
 
 **Không chạy `php artisan migrate:fresh --seed` trên database đang sử dụng:** lệnh này xóa các bảng hiện có và dữ liệu bên trong.
 
+### Bước 6a. Nạp dữ liệu minh họa để trình bày (tùy chọn)
+
+`php artisan migrate --seed` chỉ tạo dữ liệu nền (ví dụ 2 tài khoản, 17 đầu sách, chính sách thuê); **không tự sinh bản sao và giao dịch mượn/trả**. Để có sẵn thông tin trong giao diện demo, mã nguồn cung cấp `database/seeders/SaySachDemoSeeder.php`.
+
+**Chỉ thực hiện trên database riêng dành cho demo**, không chạy trên database thật, database đang sử dụng cho nghiệp vụ hoặc database kiểm thử. Seeder demo chỉ cho phép các tên database đã quy định trong mã nguồn, gồm `qlthuvien_saysach` và `qlthuvien_saysach_demo`; kiểm tra tên đang kết nối:
+
+```powershell
+php artisan config:show database.connections.mysql
+```
+
+Trước khi nạp, xuất bản sao lưu SQL bằng HeidiSQL/phpMyAdmin nếu database đã có dữ liệu cần giữ. Trong **PowerShell**, sau khi chắc chắn kết nối đúng database demo:
+
+```powershell
+$env:SAYSACH_DEMO_SEED="YES"
+php artisan db:seed --class=SaySachDemoSeeder
+Remove-Item Env:SAYSACH_DEMO_SEED
+```
+
+Nếu lệnh seed báo lỗi, vẫn chạy `Remove-Item Env:SAYSACH_DEMO_SEED -ErrorAction SilentlyContinue` để xóa biến môi trường khỏi Terminal. Sau khi chạy thành công, kiểm tra dữ liệu:
+
+```powershell
+php artisan tinker
+```
+
+Trong Tinker:
+
+```php
+DB::connection()->getDatabaseName();
+App\Models\User::count();
+App\Models\Book::count();
+App\Models\BookCopy::count();
+App\Models\BorrowRecord::count();
+App\Models\Payment::count();
+exit
+```
+
+Ở lần demo đã thực hiện trên máy nhóm: **7 tài khoản, 17 đầu sách, 39 bản sao, 11 phiếu mượn/trả, 1 thẻ thành viên, 8 thanh toán**. Đây chỉ là số liệu minh họa được ghi nhận sau khi seed, không phải cam kết cho mọi database và **không tự đồng bộ lên GitHub**. Seeder không nên dùng để tạo tồn kho thật.
+
 ### Bước 7. Liên kết thư mục lưu trữ
 
 ```powershell
@@ -182,11 +246,11 @@ Scheduler tự cập nhật phiếu quá hạn hằng ngày và kiểm tra giữ
 
 Các tài khoản được khởi tạo bởi `database/seeders/DatabaseSeeder.php` phục vụ cài đặt/kiểm thử. **Hãy đổi mật khẩu mặc định nếu sử dụng hệ thống ngoài môi trường thực hành.**
 
-Seeder đồng bộ **17 đầu sách** theo danh mục Say Sách và thiết lập chính sách thuê. **Sách mới không tự sinh bản sao hay tồn kho thực tế**; quản trị viên cần tạo bản sao theo số sách thực có.
+Seeder đồng bộ **17 đầu sách** theo danh mục Say Sách và thiết lập chính sách thuê. **Seeder nền không tự sinh bản sao hay tồn kho thực tế**; quản trị viên cần tạo bản sao theo số sách thực có. Chỉ dùng `SaySachDemoSeeder` khi muốn tạo dữ liệu *minh họa* trong database demo riêng.
 
 ## 6. Cập nhật từ phiên bản trước
 
-Trước khi cập nhật, **sao lưu mã nguồn và database**. Giữ riêng `.env` và các tệp người dùng đã tải lên trong `storage/app/public`. Sau khi cập nhật mã nguồn tương thích, chạy:
+Trước khi cập nhật, **sao lưu mã nguồn và database**. Giữ riêng `.env` và các tệp người dùng đã tải lên trong `storage/app/public`. Sau khi cập nhật mã nguồn tương thích, chạy (chỉ khi chắc chắn cấu trúc database phù hợp):
 
 ```powershell
 php artisan optimize:clear
@@ -198,6 +262,7 @@ php artisan storage:link
 - `migrate --force` áp dụng migration còn thiếu; **cần rà soát trạng thái migration trước khi dùng với database của một phiên bản có cấu trúc khác**. Không xem đây là phương án chuyển đổi dữ liệu tự động được bảo đảm cho mọi bản cũ.
 - `library:sync-catalog` cập nhật thông tin của 17 đầu sách được định nghĩa sẵn, giữ nguyên các bản sao và phiếu mượn; nếu một mã sách đã được sử dụng cho đầu sách khác, lệnh bỏ qua và cảnh báo.
 - Nếu storage link đã tồn tại, không cần tạo lại.
+- Nếu thay đổi tài nguyên frontend, chạy `npm.cmd ci` và `npm.cmd run build` để cập nhật CSS/JavaScript biên dịch.
 - Sau khi khởi động lại server, nhấn **Ctrl + F5** để tải lại CSS/JS.
 
 Không thay database hiện tại bằng database demo và không chạy `migrate:fresh` chỉ để cập nhật giao diện.
@@ -233,7 +298,9 @@ php artisan route:list
 | `php artisan route:list` | Liệt kê route |
 | `php artisan optimize:clear` | Xóa cache cấu hình, route, view và cache liên quan |
 | `php artisan migrate:status` | Kiểm tra trạng thái migration |
-| `php artisan db:seed` | Nạp dữ liệu seed (chỉ khi phù hợp database) |
+| `php artisan db:seed` | Nạp dữ liệu nền (chỉ khi phù hợp database) |
+| `php artisan db:seed --class=SaySachDemoSeeder` | Nạp dữ liệu minh họa **chỉ trong database demo** và sau khi bật biến xác nhận |
+| `npm.cmd ci` / `npm.cmd run build` | Cài dependency frontend theo lockfile và build tài nguyên giao diện |
 | `php artisan library:sync-catalog` | Đồng bộ thông tin danh mục sách |
 | `php artisan library:mark-overdue` | Đánh dấu phiếu mượn quá hạn |
 | `php artisan library:expire-reservations` | Hủy các phiếu giữ chỗ đã hết hạn |
@@ -279,7 +346,9 @@ config/
 routes/                 Khai báo route theo nhóm chức năng
 resources/views/        Giao diện Blade
 database/migrations/     Cấu trúc database
-database/seeders/        Tài khoản, chính sách và danh mục khởi tạo
+database/seeders/        Dữ liệu nền và Seeder demo riêng
+public/vendor/bootstrap/ Bootstrap CSS/JS dùng trực tiếp bởi layout
+public/build/           CSS/JS biên dịch từ Vite (tạo trên máy)
 public/css/             CSS giao diện
 public/js/              JavaScript giao diện
 public/images/catalog/  Ảnh bìa theo danh mục
@@ -289,9 +358,9 @@ tests/                  Unit test và Feature test
 
 ## 11. Lưu ý khi bàn giao và làm việc nhóm
 
-- Không đưa `.env`, mật khẩu riêng, dữ liệu người dùng thực hoặc thư mục `vendor` lên GitHub.
+- Không đưa `.env`, mật khẩu riêng, dữ liệu người dùng thực hoặc thư mục `vendor/` **ở gốc dự án (Composer)** lên GitHub. Riêng `public/vendor/bootstrap/` chứa hai file tài nguyên giao diện tĩnh cần thiết và đã được đưa vào mã nguồn.
 - Mỗi thành viên nên sử dụng branch riêng và tạo Pull Request trước khi hợp nhất vào `main`.
-- Sau khi lấy mã nguồn mới, chạy `composer install`, cấu hình `.env`, kiểm tra migration và chạy `php artisan test`.
+- Sau khi lấy mã nguồn mới, chạy `composer install`, `npm.cmd ci`, `npm.cmd run build`, cấu hình `.env`, kiểm tra migration rồi chạy `php artisan test`.
 - Chỉ nhập số bản sao sách có thật. Không tự coi 17 đầu sách trong danh mục là 17 bản sao còn sẵn.
 - Khi nâng cấp từ database cũ, luôn sao lưu và kiểm tra migration trước; không dùng `migrate:fresh` nếu muốn giữ dữ liệu.
 
