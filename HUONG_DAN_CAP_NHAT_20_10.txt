@@ -1,0 +1,68 @@
+SAY SÁCH — BẢN SỬA LỖI CHỮ, ĐẶT TRÙNG, THẺ VÀ TIỀN CỌC 20/10/2026 (V2)
+
+CẬP NHẬT PROJECT ĐANG CHẠY TRÊN LARAGON
+1. Sao lưu thư mục project và xuất bản sao database đang dùng.
+2. Chép mã nguồn bản này vào project hiện tại, giữ lại .env và storage/app/public của máy bạn (ảnh đã tải lên).
+3. Mở Terminal tại thư mục có file artisan, chạy:
+   php artisan optimize:clear
+   php artisan library:sync-catalog
+   php artisan storage:link
+4. Khởi động lại server đang dùng và nhấn Ctrl + F5 trên trình duyệt.
+   Nếu báo storage link đã tồn tại thì có thể bỏ qua bước storage:link.
+
+Lệnh library:sync-catalog cập nhật 17 đầu sách chuẩn trong config/saysach_catalog.php.
+Không xóa tài khoản, không xóa hoặc đổi trạng thái bản sao, không sửa phiếu mượn.
+Nếu mã S0001–S0017 đã dùng cho tên sách khác ngoài danh mục, lệnh bỏ qua và hiện cảnh báo.
+Ảnh tải lên còn tồn tại được ưu tiên; khi ảnh thiếu, dùng bìa tương ứng có sẵn trong public/images/catalog.
+Sách mới được bổ sung không được tự tạo số lượng tồn: thêm bản sao thực có tại Quản lý sách > Bản sao. Các bản sao đang có vẫn được giữ nguyên.
+
+CÀI MỚI
+- Yêu cầu PHP 8.2 trở lên và MySQL; đã kèm vendor.
+- Sao chép .env.example thành .env, nhập tên database và thông tin kết nối.
+- php artisan key:generate
+- php artisan migrate
+- php artisan db:seed
+- php artisan storage:link
+- php artisan serve
+- Tài khoản khởi tạo: admin@example.com / Password@123; user@example.com / Password@123.
+- Sau khi cài mới, nhập bản sao sách đúng tồn kho tại Quản lý sách > Bản sao.
+
+CÁC PHẦN ĐÃ SỬA
+- Bìa dùng một thành phần chung tại danh sách, chi tiết, quản trị và form sửa sách.
+- Khung ảnh và thẻ sách bằng nhau; cắt phần lề trắng bằng CSS, giữ nguyên file bìa thật.
+- Thay 10 ảnh bìa cũ có chữ biến dạng; bổ sung đủ 17 ảnh từ nguồn sách.
+- Font tiêu đề Georgia theo Quản lý tác giả; chữ nội dung Arial. Các tiêu đề cùng cấp dùng cùng cỡ.
+- Thêm hai đường quay lại danh sách ở chi tiết sách, giữ từ khóa và bộ lọc.
+- Banner mới không có chữ trên sách; phần chữ được dựng bằng HTML.
+- Bootstrap lưu cục bộ, không cần mạng để tải CSS, JS và ảnh giao diện.
+- Đối chiếu thông tin từng ấn bản; xem CATALOG_SOURCES.md.
+- Mục cũ Vợ chồng A Phủ được chuẩn hóa thành tập Truyện Tây Bắc có chứa truyện này.
+- Cho tôi xin một vé đi tuổi thơ dùng phiên bản đặc biệt có tranh minh họa, giá bìa theo đúng ấn bản đó.
+
+KIỂM TRA
+- Đạt 39 bài kiểm thử, 286 assertions với PHP 8.3 và SQLite riêng.
+- Đã kiểm tra JavaScript: cập nhật tổng tiền, chặn gửi khi chưa tính xong, bỏ kết quả cũ đến chậm và từ chối ngày không hợp lệ.
+- Đã kiểm tra font nhúng có đủ ký tự tiếng Việt dùng trong các tiêu đề.
+- Đã kiểm tra ảnh và UTF-8; đã chạy thử render trang qua kiểm thử HTTP.
+- Chưa xác nhận giao diện bằng trình duyệt Windows/Laragon của bạn. Công cụ trình duyệt tại môi trường kiểm tra không khởi chạy được; không coi đây là kiểm thử hiển thị thực tế trên Windows.
+- Ảnh bìa có độ phân giải khác nhau theo nguồn; ảnh Đời thừa thấp hơn phần lớn các ảnh còn lại, không phóng nội suy để giả độ nét.
+
+CẬP NHẬT V2 THEO ẢNH LỖI
+- Nhúng Noto Serif đầy đủ dấu tiếng Việt, giữ phong cách tiêu đề có chân; không phụ thuộc font Georgia trên máy.
+- Tự đổi phiên bản CSS để tránh tải lại CSS cũ từ bộ nhớ trình duyệt.
+- Bỏ dòng Quay lại danh sách sách ở đầu trang và liên kết Thông tin ấn bản.
+- Quay lại đặt cùng hàng với Đăng nhập để mượn / Đặt giữ sách.
+- Độc giả có mục Thẻ thành viên để xem thẻ của mình, hạn dùng, trạng thái và phí; cấp/gia hạn và thu tiền vẫn do nhân viên thực hiện tại quầy.
+- Đặt trùng đầu sách khi còn phiếu chờ nhận/đang mượn/quá hạn: quay về chi tiết và hiện lỗi, không tạo phiếu hoặc giữ bản sao thứ hai.
+- Sau khi đã trả/hủy phiếu, độc giả được đặt lại nếu có bản sao sẵn.
+- Bỏ bảng xanh tạm tính cố định; tiền thuê, giảm giá, cọc và tổng thanh toán cập nhật từ máy chủ theo ngày chọn.
+- Quyền lợi thẻ và giảm giá sinh viên dùng cùng công thức với bước bàn giao; không cộng thêm khoản giảm giá đã trừ trong tiền thuê.
+- Giải thích điều kiện hoàn cọc, tách tiền thuê khỏi tiền hoàn; khi trả sách chọn rõ phương thức hoàn cọc và lưu vào giao dịch.
+- Lịch sử/đối soát phân biệt cọc đã thu, đã khấu trừ, đã hoàn và còn giữ; dùng số dư sau điều chỉnh khi quyết toán.
+- Nhãn giao dịch đổi từ mã tiếng Anh sang tiếng Việt.
+
+NẾU ĐÃ CÀI BẢN TRƯỚC
+Giữ nguyên .env và storage/app/public của máy bạn, chép mã nguồn V2 vào project rồi chạy:
+   php artisan optimize:clear
+Sau đó khởi động lại php artisan serve và nhấn Ctrl + F5.
+V2 không thêm bảng/cột; không cần migrate:fresh, không cần xóa database, không cần nhập lại tồn kho.
