@@ -295,12 +295,6 @@ tests/                  Unit test và Feature test
 - Chỉ nhập số bản sao sách có thật. Không tự coi 17 đầu sách trong danh mục là 17 bản sao còn sẵn.
 - Khi nâng cấp từ database cũ, luôn sao lưu và kiểm tra migration trước; không dùng `migrate:fresh` nếu muốn giữ dữ liệu.
 
-## 12. Tài liệu kèm theo
-
-- `HUONG_DAN_CAP_NHAT_20_10.txt`: hướng dẫn và ghi chú cập nhật của phiên bản Say Sách.
-- `HUONG_DAN_SAY_SACH.txt`: hướng dẫn ngắn về các tài liệu liên quan.
-- `CATALOG_SOURCES.md`: nguồn tham khảo thông tin và ảnh bìa các ấn bản.
-
 ---
 
 **Say Sách — Website Quản lý thư viện**  
