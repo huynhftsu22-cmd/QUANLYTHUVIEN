@@ -1,2 +1,0 @@
-Hướng dẫn cài và cập nhật: xem HUONG_DAN_CAP_NHAT_20_10.txt.
-Thông tin từng ấn bản và nguồn bìa: xem CATALOG_SOURCES.md.
